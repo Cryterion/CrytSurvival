@@ -1,6 +1,5 @@
 default
-biome_lib
-stairs?
+plants_lib
 moreblocks?
 intllib?
 

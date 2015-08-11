@@ -130,7 +130,7 @@ abstract_youngtrees.grow_youngtree_node = function(pos, height)
 end
 
 
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {
 		"default:dirt_with_grass", 
 		"stoneage:grass_with_silex",

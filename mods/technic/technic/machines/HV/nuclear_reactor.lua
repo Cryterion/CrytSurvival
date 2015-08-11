@@ -6,7 +6,7 @@
 -- The nuclear reactor core needs water and a protective shield to work.
 -- This is checked now and then and if the machine is tampered with... BOOM!
 
-local burn_ticks   = 30 * 24 * 60 * 60       -- (seconds).
+local burn_ticks   = 7 * 24 * 60 * 60       -- (seconds).
 local power_supply = 100000                 -- EUs
 local fuel_type    = "technic:uranium_fuel" -- The reactor burns this stuff
 
@@ -32,7 +32,8 @@ local generator_formspec =
 	"invsize[8,9;]"..
 	"label[0,0;"..S("Nuclear Reactor Rod Compartment").."]"..
 	"list[current_name;src;2,1;3,2;]"..
-	"list[current_player;main;0,5;8,4;]"
+	"list[current_player;main;0,5;8,4;]"..
+	"listring[]"
 
 -- "Boxy sphere"
 local nodebox = {

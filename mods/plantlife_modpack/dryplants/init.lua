@@ -9,7 +9,7 @@ local mname		= "dryplants"
 -- License (everything): 	WTFPL
 -- Contains code from: 		default, farming 
 -- Looked at code from:		darkage, sickle, stairs
--- Dependencies: 			default, farming, biome_lib
+-- Dependencies: 			default, farming, plants_lib
 -- Supports:				
 -----------------------------------------------------------------------------------------------
 abstract_dryplants = {}
@@ -190,11 +190,7 @@ minetest.register_abm({
 	interval = GRASS_REGROWING_TIME, --1200, -- 20 minutes: a minetest-day/night-cycle
 	chance = 100/GRASS_REGROWING_CHANCE,
 	action = function(pos)
-		-- Only become dirt with grass if no cut grass or hay lies on top
-		local above = minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z})
-		if above.name ~= "dryplants:grass" and above.name ~= "dryplants:hay" then
-			minetest.set_node(pos, {name="default:dirt_with_grass"})
-		end
+		minetest.set_node(pos, {name="default:dirt_with_grass"})
 	end,
 })
 

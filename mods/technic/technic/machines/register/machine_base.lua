@@ -42,12 +42,20 @@ function technic.register_base_machine(data)
 		"list[current_name;src;"..(4-input_size)..",1;"..input_size..",1;]"..
 		"list[current_name;dst;5,1;2,2;]"..
 		"list[current_player;main;0,5;8,4;]"..
-		"label[0,0;"..machine_desc:format(tier).."]"
+		"label[0,0;"..machine_desc:format(tier).."]"..
+		"listring[current_name;dst]"..
+		"listring[current_player;main]"..
+		"listring[current_name;src]"..
+		"listring[current_player;main]"
 	if data.upgrade then
 		formspec = formspec..
 			"list[current_name;upgrade1;1,3;1,1;]"..
 			"list[current_name;upgrade2;2,3;1,1;]"..
-			"label[1,4;"..S("Upgrade Slots").."]"
+			"label[1,4;"..S("Upgrade Slots").."]"..
+			"listring[current_name;upgrade1]"..
+			"listring[current_player;main]"..
+			"listring[current_name;upgrade2]"..
+			"listring[current_player;main]"
 	end
 
 	local run = function(pos, node)
@@ -114,6 +122,9 @@ function technic.register_base_machine(data)
 				inv:add_item("dst_tmp", o)
 			end
 			if not room_for_output then
+				technic.swap_node(pos, machine_node)
+				meta:set_string("infotext", S("%s Idle"):format(machine_desc_tier))
+				meta:set_int(tier.."_EU_demand", 0)
 				meta:set_int("src_time", round(result.time*10))
 				return
 			end

@@ -3,9 +3,9 @@
 -----------------------------------------------------------------------------------------------
 -- by Mossmanikin
 -- License (everything): 	WTFPL
--- Contains code from: 		biome_lib
+-- Contains code from: 		plants_lib
 -- Looked at code from:		default, flowers, painting, trees
--- Dependencies: 			biome_lib
+-- Dependencies: 			plants_lib
 -- Supports:				dryplants, stoneage, sumpf		
 -----------------------------------------------------------------------------------------------
 -- some inspiration from here
@@ -71,7 +71,7 @@ create_nodes()
 -----------------------------------------------------------------------------------------------
 
 if abstract_ferns.config.lady_ferns_near_tree == true then
-	biome_lib:register_generate_plant({ -- near trees (woodlands)
+	plantslib:register_generate_plant({ -- near trees (woodlands)
 		surface = {
 			"default:dirt_with_grass",
 			"default:mossycobble",
@@ -100,7 +100,7 @@ if abstract_ferns.config.lady_ferns_near_tree == true then
 end
 
 if abstract_ferns.config.lady_ferns_near_rock == true then
-	biome_lib:register_generate_plant({ -- near stone (mountains)
+	plantslib:register_generate_plant({ -- near stone (mountains)
 		surface = {
 			"default:dirt_with_grass",
 			"default:mossycobble",
@@ -127,7 +127,7 @@ if abstract_ferns.config.lady_ferns_near_rock == true then
 end
 
 if abstract_ferns.config.lady_ferns_near_ores == true then -- this one causes a huge fps drop
-	biome_lib:register_generate_plant({ -- near ores (potential mining sites)
+	plantslib:register_generate_plant({ -- near ores (potential mining sites)
 		surface = {
 			"default:dirt_with_grass",
 			"default:mossycobble",
@@ -165,7 +165,7 @@ if abstract_ferns.config.lady_ferns_near_ores == true then -- this one causes a 
 end
 
 if abstract_ferns.config.lady_ferns_in_groups == true then -- this one is meant as a replacement of Ferns_near_Ores
-	biome_lib:register_generate_plant({
+	plantslib:register_generate_plant({
 		surface = {
 			"default:dirt_with_grass",
 			"default:mossycobble",

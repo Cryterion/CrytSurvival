@@ -1,5 +1,5 @@
 default
-biome_lib
+plants_lib
 bushes?
 ferns?
 moretrees?

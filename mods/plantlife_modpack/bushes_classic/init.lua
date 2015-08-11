@@ -3,7 +3,7 @@
 --
 -- License:  WTFPL
 
-local S = biome_lib.intllib
+local S = plantslib.intllib
 
 bushes_classic = {}
 
@@ -30,7 +30,7 @@ bushes_classic.spawn_list = {}
 dofile(minetest.get_modpath('bushes_classic') .. '/cooking.lua')
 dofile(minetest.get_modpath('bushes_classic') .. '/nodes.lua')
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = 3600,
 	spawn_plants = bushes_classic.spawn_list,
 	avoid_radius = 10,

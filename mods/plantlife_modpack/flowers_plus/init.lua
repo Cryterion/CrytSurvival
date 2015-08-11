@@ -1,4 +1,4 @@
-local S = biome_lib.intllib
+local S = plantslib.intllib
 
 -- This file supplies a few additional plants and some related crafts
 -- for the plantlife modpack.  Last revision:  2013-04-24
@@ -76,16 +76,16 @@ for i in ipairs(lilies_list) do
 			local above_node = minetest.get_node(pt.above)
 			local top_node   = minetest.get_node(top_pos)
 
-			if biome_lib:get_nodedef_field(under_node.name, "buildable_to") then
+			if plantslib:get_nodedef_field(under_node.name, "buildable_to") then
 				if under_node.name ~= "default:water_source" then
 					place_pos = pt.under
 				elseif top_node.name ~= "default:water_source" 
-				       and biome_lib:get_nodedef_field(top_node.name, "buildable_to") then
+				       and plantslib:get_nodedef_field(top_node.name, "buildable_to") then
 					place_pos = top_pos
 				else
 					return
 				end
-			elseif biome_lib:get_nodedef_field(above_node.name, "buildable_to") then
+			elseif plantslib:get_nodedef_field(above_node.name, "buildable_to") then
 				place_pos = pt.above
 			end
 
@@ -119,7 +119,7 @@ for i in ipairs(lilies_list) do
 					minetest.set_node(place_pos, {name = "flowers:waterlily", param2 = fdir})
 				end
 
-				if not biome_lib.expect_infinite_stacks then
+				if not plantslib.expect_infinite_stacks then
 					itemstack:take_item()
 				end
 				return itemstack
@@ -176,16 +176,16 @@ for i in ipairs(algae_list) do
 			local above_node = minetest.get_node(pt.above)
 			local top_node   = minetest.get_node(top_pos)
 
-			if biome_lib:get_nodedef_field(under_node.name, "buildable_to") then
+			if plantslib:get_nodedef_field(under_node.name, "buildable_to") then
 				if under_node.name ~= "default:water_source" then
 					place_pos = pt.under
 				elseif top_node.name ~= "default:water_source" 
-				       and biome_lib:get_nodedef_field(top_node.name, "buildable_to") then
+				       and plantslib:get_nodedef_field(top_node.name, "buildable_to") then
 					place_pos = top_pos
 				else
 					return
 				end
-			elseif biome_lib:get_nodedef_field(above_node.name, "buildable_to") then
+			elseif plantslib:get_nodedef_field(above_node.name, "buildable_to") then
 				place_pos = pt.above
 			end
 
@@ -211,7 +211,7 @@ for i in ipairs(algae_list) do
 					minetest.set_node(place_pos, {name = "flowers:seaweed", param2 = fdir})
 				end
 
-				if not biome_lib.expect_infinite_stacks then
+				if not plantslib.expect_infinite_stacks then
 					itemstack:take_item()
 				end
 				return itemstack
@@ -220,15 +220,57 @@ for i in ipairs(algae_list) do
 	})
 end
 
+-- register all potted plant nodes, crafts, and most backward-compat aliases
+-- Description, base node name, item to craft flowerpot with
+
+local flowers_list = {
+	{ "Rose",				"rose", 			"flowers:rose" },
+	{ "Tulip",				"tulip", 			"flowers:tulip" },
+	{ "Yellow Dandelion",	"dandelion_yellow",	"flowers:dandelion_yellow" },
+	{ "White Dandelion",	"dandelion_white",	"flowers:dandelion_white" },
+	{ "Blue Geranium",		"geranium",			"flowers:geranium" },
+	{ "Viola",				"viola",			"flowers:viola" },
+	{ "Cactus",				"cactus",			"default:cactus" },
+	{ "Bonsai",				"bonsai",			"default:sapling" }
+}
+
+for i in ipairs(flowers_list) do
+	local flowerdesc	= flowers_list[i][1]
+	local flower		= flowers_list[i][2]
+	local craftwith		= flowers_list[i][3]
+	
+	minetest.register_node(":flowers:potted_"..flower, {
+		description = S("Potted "..flowerdesc),
+		drawtype = "mesh",
+		mesh = "flowers_potted.obj",
+		tiles = { "flowers_potted_"..flower..".png", "flowers_potted.png" },
+		sunlight_propagates = true,
+		paramtype = "light",
+		walkable = false,
+		groups = { snappy = 3, flammable=2 },
+		sounds = default.node_sound_glass_defaults(),
+		selection_box = {
+			type = "fixed",
+			fixed = { -0.2, -0.5, -0.2, 0.2, 0.4, 0.2 },
+		},	
+	})
+
+	minetest.register_craft( {
+		type = "shapeless",
+		output = "flowers:potted_"..flower,
+		recipe = {
+			craftwith,
+			"flowers:flower_pot"
+		}
+	})
+
+	minetest.register_alias("flowers:flower_"..flower.."_pot", "flowers:potted_"..flower)
+end
+
 local box = {
 	type="fixed",
 	fixed = { { -0.2, -0.5, -0.2, 0.2, 0.5, 0.2 } },
 }
-
-local sunflower_drop = "farming:seed_wheat"
-if minetest.registered_items["farming:seed_spelt"] then 
-	sunflower_drop = "farming:seed_spelt"
-end
 
 minetest.register_node(":flowers:sunflower", {
 	description = "Sunflower",
@@ -245,14 +287,15 @@ minetest.register_node(":flowers:sunflower", {
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = box,
 	collision_box = box,
-	drop = {
-		max_items = 1,
-		items = {
-			{items = {sunflower_drop}, rarity = 8},
-			{items = {"flowers:sunflower"}},
-		}
-	}
 })
+
+minetest.override_item("flowers:sunflower", {drop = {
+	max_items = 1,
+	items = {
+		{items = {"farming:seed_wheat"}, rarity = 8},
+		{items = {"flowers:sunflower"}},
+	}
+}})
 
 local extra_aliases = {
 	"waterlily",
@@ -297,7 +340,7 @@ flowers_plus.grow_waterlily = function(pos)
 	end
 end
 
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {"default:water_source"},
     max_count = lilies_max_count,
     rarity = lilies_rarity,
@@ -319,7 +362,7 @@ flowers_plus.grow_seaweed = function(pos)
 	minetest.set_node(right_here, {name="along_shore:seaweed_"..math.random(1,4), param2=math.random(1,3)})
 end
 
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {"default:water_source"},
     max_count = seaweed_max_count,
     rarity = seaweed_rarity,
@@ -336,7 +379,7 @@ biome_lib:register_generate_plant({
 
 -- seaweed at beaches
 -- MM: not satisfied with it, but IMHO some beaches should have some algae
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {"default:water_source"},
     max_count = seaweed_max_count,
     rarity = seaweed_rarity,
@@ -352,7 +395,7 @@ biome_lib:register_generate_plant({
   },
   flowers_plus.grow_seaweed
 )
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {"default:sand"},
     max_count = seaweed_max_count*2,
     rarity = seaweed_rarity/2,
@@ -369,7 +412,7 @@ biome_lib:register_generate_plant({
   flowers_plus.grow_seaweed
 )
 
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
 	surface = {"default:dirt_with_grass"},
 	avoid_nodes = { "flowers:sunflower" },
 	max_count = sunflowers_max_count,
@@ -384,7 +427,7 @@ biome_lib:register_generate_plant({
 
 -- spawn ABM registrations
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY/2,
 	spawn_plants = {
 		"flowers:waterlily",
@@ -406,7 +449,7 @@ biome_lib:spawn_on_surfaces({
 	random_facedir = {0,3}
 })
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY*2,
 	spawn_plants = {"flowers:seaweed"},
 	spawn_chance = SPAWN_CHANCE*2,
@@ -419,7 +462,7 @@ biome_lib:spawn_on_surfaces({
 	facedir = 1
 })
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY*2,
 	spawn_plants = {"flowers:seaweed"},
 	spawn_chance = SPAWN_CHANCE*2,
@@ -433,7 +476,7 @@ biome_lib:spawn_on_surfaces({
 	facedir = 1
 })
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY*2,
 	spawn_plants = {"flowers:seaweed"},
 	spawn_chance = SPAWN_CHANCE*2,
@@ -447,7 +490,7 @@ biome_lib:spawn_on_surfaces({
 	facedir = 1
 })
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY*2,
 	spawn_plants = {"flowers:sunflower"},
 	spawn_chance = SPAWN_CHANCE*2,
@@ -461,6 +504,21 @@ biome_lib:spawn_on_surfaces({
 	temp_max = 0.53,
 	random_facedir = {0,3},
 	avoid_radius = 5
+})
+
+-- crafting recipes!
+
+minetest.register_craftitem(":flowers:flower_pot", {
+	description = S("Flower Pot"),
+	inventory_image = "flowers_flowerpot.png",
+})
+
+minetest.register_craft( {
+	output = "flowers:flower_pot",
+	recipe = {
+	        { "default:clay_brick", "", "default:clay_brick" },
+	        { "", "default:clay_brick", "" }
+	},
 })
 
 -- Cotton plants are now provided by the default "farming" mod.

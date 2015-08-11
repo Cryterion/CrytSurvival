@@ -1,7 +1,7 @@
 -- This file supplies poison ivy for the plantlife modpack
 -- Last revision:  2013-01-24
 
-local S = biome_lib.intllib
+local S = plantslib.intllib
 
 local SPAWN_DELAY = 1000
 local SPAWN_CHANCE = 200
@@ -69,7 +69,7 @@ minetest.register_node('poisonivy:climbing', {
 	buildable_to = true,
 })
 
-biome_lib:spawn_on_surfaces({
+plantslib:spawn_on_surfaces({
 	spawn_delay = SPAWN_DELAY,
 	spawn_plants = {"poisonivy:seedling"},
 	avoid_radius = 10,
@@ -82,7 +82,7 @@ biome_lib:spawn_on_surfaces({
 	verticals_list = walls_list
 })
 
-biome_lib:grow_plants({
+plantslib:grow_plants({
 	grow_delay = SPAWN_DELAY,
 	grow_chance = GROW_CHANCE,
 	grow_plant = "poisonivy:seedling",
@@ -90,7 +90,7 @@ biome_lib:grow_plants({
 	grow_nodes = {"default:dirt_with_grass"}
 })
 
-biome_lib:grow_plants({
+plantslib:grow_plants({
 	grow_delay = GROW_DELAY,
 	grow_chance = GROW_CHANCE*2,
 	grow_plant = "poisonivy:climbing",

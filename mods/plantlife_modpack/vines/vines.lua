@@ -26,6 +26,7 @@ vines.register_vine( 'vine', {
   spawn_delay = 500,
   spawn_chance = 100,
   spawn_surfaces = {
+    "default:leaves",
     "default:jungleleaves",
     "moretrees:jungletree_leaves_red",
     "moretrees:jungletree_leaves_yellow",
@@ -47,6 +48,7 @@ vines.register_vine( 'side', {
   spawn_delay = 500,
   spawn_chance = 100,
   spawn_surfaces = {
+    "default:leaves",
     "default:jungleleaves",
     "moretrees:jungletree_leaves_red",
     "moretrees:jungletree_leaves_yellow",

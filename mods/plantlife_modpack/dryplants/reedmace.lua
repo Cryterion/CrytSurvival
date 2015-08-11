@@ -5,7 +5,7 @@
 -- textures & ideas partly by Neuromancer
 
 -- License (everything): 	WTFPL
--- Contains code from: 		biome_lib
+-- Contains code from: 		plants_lib
 -- Looked at code from:		default, trees				
 -----------------------------------------------------------------------------------------------
 
@@ -325,7 +325,7 @@ minetest.register_entity("dryplants:reedmace_water_entity",{
 -----------------------------------------------------------------------------------------------
 -- SPAWN REEDMACE
 -----------------------------------------------------------------------------------------------
---[[biome_lib:spawn_on_surfaces({
+--[[plantslib:spawn_on_surfaces({
 	spawn_delay = 1200,
 	spawn_plants = {"dryplants:reedmace_sapling"},
 	spawn_chance = 400,
@@ -346,7 +346,7 @@ minetest.register_entity("dryplants:reedmace_water_entity",{
 -- GENERATE REEDMACE
 -----------------------------------------------------------------------------------------------
 -- near water or swamp
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {
 		"default:dirt_with_grass", 
 		"default:desert_sand",
@@ -367,7 +367,7 @@ biome_lib:register_generate_plant({
   abstract_dryplants.grow_reedmace
 )
 -- in water
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {
 		"default:dirt",
 		"default:dirt_with_grass", 
@@ -390,7 +390,7 @@ biome_lib:register_generate_plant({
   abstract_dryplants.grow_reedmace_water
 )
 -- for oases & tropical beaches & tropical swamps
-biome_lib:register_generate_plant({
+plantslib:register_generate_plant({
     surface = {
 		"default:sand",
 		"sumpf:sumpf"

@@ -7,7 +7,6 @@ local current_mod_name = minetest.get_current_modname()
 
 nature = {}
 nature.blossomqueue = {}
-nature.blossomqueue_max = 1000
 
 nature.blossom_node = "nature:blossom"
 nature.blossom_leaves = "default:leaves"
@@ -20,14 +19,15 @@ if minetest.get_modpath("moretrees") then
 	minetest.register_alias("nature:blossom", "default:leaves")
 end
 
-nature.leaves_blossom_chance = 15
-nature.blossom_leaves_chance = 5
+nature.blossom_chance = 15
 nature.blossom_delay = 3600
 nature.apple_chance = 10
 nature.apple_spread = 2
 
-nature.meta_blossom_time = "blossom_time"
-nature.blossom_duration = nature.blossom_delay
+nature.node_young = "young"
+nature.setting_true = "true"
+nature.setting_false = "false"
+nature.youth_delay = 5
 
 function dumppos(pos)
 	return "("..pos.x..","..pos.y..","..pos.z..")"
