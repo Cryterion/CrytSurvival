@@ -10,9 +10,17 @@ local sofas_list = {
 	{ "White Sofa", "white"},
 }
 
-local sofa_cbox = {
+local sofa_sbox = {
 	type = "fixed",
 	fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 1.5}
+}
+
+local sofa_cbox = {
+	type = "fixed",
+	fixed = { 
+		{-0.5, -0.5, -0.5, 0.5, 0, 1.5 },
+		{-0.5, -0.5, 0.5, -0.4, 0.5, 1.5 }
+	}
 }
 
 for i in ipairs(sofas_list) do
@@ -29,19 +37,24 @@ for i in ipairs(sofas_list) do
 		},
 		paramtype = "light",
 		paramtype2 = "facedir",
-		groups = {snappy=1,choppy=2,oddly_breakable_by_hand=2,flammable=3},
+		groups = {snappy=3},
 		sounds = default.node_sound_wood_defaults(),
-		selection_box = sofa_cbox,
-		collision_box = sofa_cbox,
-        on_place = function(itemstack, placer, pointed_thing)
-			local pos = pointed_thing.above
+		selection_box = sofa_sbox,
+		node_box = sofa_cbox,
+		on_rotate = screwdriver.disallow,
+
+		after_place_node = function(pos, placer, itemstack, pointed_thing)
+			if minetest.is_protected(pos, placer:get_player_name()) then return true end
+
 			local fdir = minetest.dir_to_facedir(placer:get_look_dir(), false)
 
-			if lrfurn.check_forward(pos, fdir, true) then
+			if lrfurn.check_forward(pos, fdir, false, placer) then
 				minetest.set_node(pos, {name = "lrfurn:sofa_"..colour, param2 = fdir})
 				itemstack:take_item()
 			else
 				minetest.chat_send_player(placer:get_player_name(), "No room to place the sofa!")
+				minetest.set_node(pos, { name = "air" })
+
 			end
 			return itemstack
 		end,
@@ -72,15 +85,6 @@ for i in ipairs(sofas_list) do
 		recipe = {
 			{"wool:"..colour, "wool:"..colour, "", },
 			{"moreblocks:slab_wood", "moreblocks:slab_wood", "", },
-			{"group:stick", "group:stick", "", }
-		}
-	})
-
-	minetest.register_craft({
-		output = "lrfurn:sofa_"..colour,
-		recipe = {
-			{"wool:"..colour, "wool:"..colour, "", },
-			{"group:wood_slab", "group:wood_slab", "", },
 			{"group:stick", "group:stick", "", }
 		}
 	})

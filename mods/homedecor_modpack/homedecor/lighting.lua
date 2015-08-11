@@ -1,4 +1,3 @@
-
 -- This file supplies glowlights
 
 local dirs1 = { 20, 23, 22, 21 }
@@ -82,8 +81,8 @@ homedecor.register("glowlight_half_"..color, {
 	selection_box = glowlight_nodebox.half,
 	node_box = glowlight_nodebox.half,
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX,
+	sounds = default.node_sound_glass_defaults(),
 	on_place = minetest.rotate_node
 })
 
@@ -100,8 +99,8 @@ homedecor.register("glowlight_quarter_"..color, {
 	selection_box = glowlight_nodebox.quarter,
 	node_box = glowlight_nodebox.quarter,
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-1,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX-1,
+	sounds = default.node_sound_glass_defaults(),
 	on_place = minetest.rotate_node
 })
 
@@ -120,8 +119,8 @@ homedecor.register("glowlight_small_cube_"..color, {
 	selection_box = glowlight_nodebox.small_cube,
 	node_box = glowlight_nodebox.small_cube,
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-1,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX-1,
+	sounds = default.node_sound_glass_defaults(),
 	on_place = minetest.rotate_node
 })
 
@@ -130,15 +129,15 @@ end
 homedecor.register("plasma_lamp", {
 	description = "Plasma Lamp",
 	drawtype = "glasslike_framed",
-	tiles = {"homedecor_gold_block.png","homedecor_glass_face_clean.png"},
+	tiles = {"default_gold_block.png","homedecor_glass_face_clean.png"},
 	special_tiles = {
 		{
 			name="homedecor_plasma_storm.png",
 			animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0},
 		}
 	},
---	use_texture_alpha = true,
-	light_source = LIGHT_MAX - 1,
+	use_texture_alpha = true,
+	light_source = default.LIGHT_MAX - 1,
 	sunlight_propagates = true,
 	groups = {cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_glass_defaults(),
@@ -147,67 +146,165 @@ homedecor.register("plasma_lamp", {
 	end
 })
 
+homedecor.register("plasma_ball", {
+	description = "Plasma Ball",
+	mesh = "homedecor_plasma_ball.obj",
+	tiles = {
+		"homedecor_generic_plastic_black.png",
+		{
+			name = "homedecor_plasma_ball_streamers.png",
+			animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0},
+		},
+		"homedecor_plasma_ball_glass.png"
+	},
+	inventory_image = "homedecor_plasma_ball_inv.png",
+	selection_box = {	
+		type = "fixed",
+		fixed = { -0.1875, -0.5, -0.1875, 0.1875, 0, 0.1875 }
+	},
+	walkable = false,
+	use_texture_alpha = true,
+	light_source = default.LIGHT_MAX - 5,
+	sunlight_propagates = true,
+	groups = {cracky=3,oddly_breakable_by_hand=3},
+	sounds = default.node_sound_glass_defaults(),
+})
+
+local tc_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -0.1875, -0.5, -0.1875, 0.1875, 0.375, 0.1875 },
+	}
+}
+
 homedecor.register("candle", {
 	description = S("Thick Candle"),
+	mesh = "homedecor_candle_thick.obj",
 	tiles = {
-		'homedecor_candle_top.png',
-		'homedecor_candle_top.png',
-		{name="homedecor_candle_sides.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
+		'homedecor_candle_sides.png',
+		{name="homedecor_candle_flame.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
 	},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{ -0.125, -0.5, -0.125, 0.125, 0, 0.125 },
-			{ -0.125, 0, 0, 0.125, 0.5, 0 },
-			{ 0, 0, -0.125, 0, 0.5, 0.125 }
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = {
-			{ -0.1875, -0.5, -0.1875, 0.1875, 0.5, 0.1875 },
-		}
-	},
-	sunlight_propagates = true,
-	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-4,
-	sounds = default.node_sound_wood_defaults(),
-})
-
-homedecor.register("candle_thin", {
-	description = S("Little Candle"),
-	inventory_image = 'homedecor_candle_inv.png',
-	drawtype = "plantlike",
-	tiles = {
-		{name="homedecor_candle.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1.0}},
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = {
-			{ -0.1, -0.5, -0.1, 0.125, 0.05, 0.125 },
-		}
-	},
-	sunlight_propagates = true,
+	inventory_image = "homedecor_candle_inv.png",
+	selection_box = tc_cbox,
 	walkable = false,
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-4,
+	light_source = default.LIGHT_MAX-4,
 })
 
-homedecor.register("oil_lamp", {
-	description = S("Oil lamp"),
-	drawtype = "plantlike",
-	tiles = { 'homedecor_oil_lamp.png' },
-	inventory_image = 'homedecor_oil_lamp.png',
-	sunlight_propagates = true,
+local c_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -0.125, -0.5, -0.125, 0.125, 0.05, 0.125 },
+	}
+}
+
+homedecor.register("candle_thin", {
+	description = S("Thin Candle"),
+	mesh = "homedecor_candle_thin.obj",
+	tiles = {
+		'homedecor_candle_sides.png',
+		{name="homedecor_candle_flame.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
+	},
+	inventory_image = "homedecor_candle_thin_inv.png",
+	selection_box = c_cbox,
+	walkable = false,
+	groups = { snappy = 3 },
+	light_source = default.LIGHT_MAX-4,
+})
+
+local cs_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -0.15625, -0.5, -0.15625, 0.15625, 0.3125, 0.15625 },
+	}
+}
+
+homedecor.register("candlestick_wrought_iron", {
+	description = S("Candlestick (wrought iron)"),
+	mesh = "homedecor_candlestick.obj",
+	tiles = {
+		"homedecor_candle_sides.png",
+		{name="homedecor_candle_flame.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
+		"homedecor_generic_metal_wrought_iron.png",
+	},
+	inventory_image = "homedecor_candlestick_wrought_iron_inv.png",
+	selection_box = cs_cbox,
+	walkable = false,
+	groups = { snappy = 3 },
+	light_source = default.LIGHT_MAX-4,
+})
+
+homedecor.register("candlestick_brass", {
+	description = S("Candlestick (brass)"),
+	mesh = "homedecor_candlestick.obj",
+	tiles = {
+		"homedecor_candle_sides.png",
+		{name="homedecor_candle_flame.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
+		"homedecor_generic_metal_brass.png",
+	},
+	inventory_image = "homedecor_candlestick_brass_inv.png",
+	selection_box = cs_cbox,
+	walkable = false,
+	groups = { snappy = 3 },
+	light_source = default.LIGHT_MAX-4,
+})
+
+homedecor.register("wall_sconce", {
+	description = S("Wall sconce"),
+	mesh = "homedecor_wall_sconce.obj",
+	tiles = {
+		'homedecor_candle_sides.png',
+		{name="homedecor_candle_flame.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}},
+		'homedecor_wall_sconce_back.png',
+		'homedecor_generic_metal_wrought_iron.png',
+	},
+	inventory_image = "homedecor_wall_sconce_inv.png",
 	selection_box = {
 		type = "fixed",
-		fixed = {
-			{ -0.3, -0.5, -0.3, 0.3, 0.5, 0.3 },
-		}
+		fixed = { -0.1875, -0.25, 0.3125, 0.1875, 0.25, 0.5 }
 	},
+	walkable = false,
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-4,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX-4,
+})
+
+local ol_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -5/16, -8/16, -3/16, 5/16, 4/16, 3/16 },
+	}
+}
+
+homedecor.register("oil_lamp", {
+	description = S("Oil lamp (hurricane)"),
+	mesh = "homedecor_oil_lamp.obj",
+	tiles = {
+		"homedecor_generic_metal_brass.png",
+		"homedecor_generic_metal_black.png",
+		"homedecor_generic_metal_black.png^[colorize:#ff0000:160",
+		"homedecor_oil_lamp_wick.png",
+		"homedecor_generic_metal_black.png^[colorize:#ff0000:150",
+		"homedecor_oil_lamp_glass.png",
+	},
+	use_texture_alpha = true,
+	inventory_image = "homedecor_oil_lamp_inv.png",
+	selection_box = ol_cbox,
+	walkable = false,
+	groups = { snappy = 3 },
+	light_source = default.LIGHT_MAX-3,
+	sounds = default.node_sound_glass_defaults(),
+})
+
+homedecor.register("oil_lamp_tabletop", {
+	description = S("Oil Lamp (tabletop)"),
+	mesh = "homedecor_oil_lamp_tabletop.obj",
+	tiles = {"homedecor_oil_lamp_tabletop.png"},
+	inventory_image = "homedecor_oil_lamp_tabletop_inv.png",
+	selection_box = ol_cbox,
+	collision_box = ol_cbox,
+	groups = { snappy = 3 },
+	light_source = default.LIGHT_MAX-3,
+	sounds = default.node_sound_glass_defaults(),
 })
 
 local gl_cbox = {
@@ -220,30 +317,32 @@ minetest.register_alias("homedecor:wall_lantern", "homedecor:ground_lantern")
 homedecor.register("ground_lantern", {
 	description = S("Ground Lantern"),
 	mesh = "homedecor_ground_lantern.obj",
-	tiles = {"homedecor_ground_lantern.png"},
+	tiles = { "homedecor_light.png", "homedecor_generic_metal_wrought_iron.png" },
+	use_texture_alpha = true,
 	inventory_image = "homedecor_ground_lantern_inv.png",
 	wield_image = "homedecor_ground_lantern_inv.png",
 	groups = {snappy=3},
 	light_source = 11,
 	selection_box = gl_cbox,
-	collision_box = gl_cbox
+	walkable = false
 })
 
 local hl_cbox = {
 	type = "fixed",
-	fixed = { -0.25, -0.4, -0.2, 0.25, 0.5, 0.5 },
+	fixed = { -0.25, -0.5, -0.2, 0.25, 0.5, 0.5 },
 }
 
 homedecor.register("hanging_lantern", {
 	description = S("Hanging Lantern"),
 	mesh = "homedecor_hanging_lantern.obj",
-	tiles = {"homedecor_hanging_lantern.png"},
+	tiles = { "homedecor_generic_metal_wrought_iron.png", "homedecor_light.png" },
+	use_texture_alpha = true,
 	inventory_image = "homedecor_hanging_lantern_inv.png",
 	wield_image = "homedecor_hanging_lantern_inv.png",
 	groups = {snappy=3},
 	light_source = 11,
 	selection_box = hl_cbox,
-	collision_box = hl_cbox
+	walkable = false
 })
 
 local cl_cbox = {
@@ -254,21 +353,22 @@ local cl_cbox = {
 homedecor.register("ceiling_lantern", {
 	drawtype = "mesh",
 	mesh = "homedecor_ceiling_lantern.obj",
-	tiles = { "homedecor_ceiling_lantern.png" },
+	tiles = { "homedecor_light.png", "homedecor_generic_metal_wrought_iron.png" },
+	use_texture_alpha = true,
 	inventory_image = "homedecor_ceiling_lantern_inv.png",
 	description = "Ceiling Lantern",
 	groups = {snappy=3},	
 	light_source = 11,
 	selection_box = cl_cbox,
-	collision_box = cl_cbox,
+	walkable = false
 })
 
 homedecor.register("lattice_lantern_large", {
 	description = S("Lattice lantern (large)"),
 	tiles = { 'homedecor_lattice_lantern_large.png' },
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX,
+	sounds = default.node_sound_glass_defaults(),
 })
 
 homedecor.register("lattice_lantern_small", {
@@ -287,13 +387,23 @@ homedecor.register("lattice_lantern_small", {
 		fixed = { -0.25, -0.5, -0.25, 0.25, 0, 0.25 }
 	},
 	groups = { snappy = 3 },
-	light_source = LIGHT_MAX-1,
-	sounds = default.node_sound_wood_defaults(),
+	light_source = default.LIGHT_MAX-1,
+	sounds = default.node_sound_glass_defaults(),
 	on_place = minetest.rotate_node
 })
 
 local repl = { off="low", low="med", med="hi", hi="max", max="off", }
-local lamp_colors = { "", "blue", "green", "pink", "red", "violet" }
+
+local brights_tab = { 0, 50, 100, 150, 200 }
+
+local lamp_colors = {
+	{"white", "#ffffffe0:175"},
+	{"blue", "#2626c6e0:200"},
+	{"green", "#27a927e0:200"},
+	{"pink", "#ff8fb7e0:200"},
+	{"red", "#ad2323e0:200"},
+	{"violet", "#7f29d7e0:200"}
+}
 
 local tlamp_cbox = {
 	type = "fixed",
@@ -306,22 +416,33 @@ local slamp_cbox = {
 }
 
 local function reg_lamp(suffix, nxt, tilesuffix, light, color)
-	local lampcolor = "_"..color
-	local colordesc = " ("..color..")"
+	local lampcolor = "_"..color[1]
+	local colordesc = " ("..color[1]..")"
+	local woolcolor = color[1]
+	local invcolor = color[2]
+	local wool_brighten = (light or 0) * 7
+	local bulb_brighten = (light or 0) * 14
+
 	if color == "" then
 		lampcolor = ""
 		colordesc  = " (white)"
+		woolcolor = "white"
 	end
 
 	homedecor.register("table_lamp"..lampcolor.."_"..suffix, {
 		description = S("Table Lamp "..colordesc),
 		mesh = "homedecor_table_lamp.obj",
-		tiles = { "homedecor_table_standing_lamp"..lampcolor.."_"..suffix..".png" },
-		inventory_image = "homedecor_table_lamp"..lampcolor.."_inv.png",
+		tiles = {
+			"wool_"..woolcolor..".png^[colorize:#ffffff:"..wool_brighten,
+			"homedecor_table_standing_lamp_lightbulb.png^[colorize:#ffffff:"..bulb_brighten,
+			"homedecor_generic_wood_red.png",
+			"homedecor_generic_metal_black.png^[brighten",
+		},
+		inventory_image = "homedecor_table_lamp_foot_inv.png^(homedecor_table_lamp_top_inv.png^[colorize:"..invcolor..")",
 		walkable = false,
 		light_source = light,
 		selection_box = tlamp_cbox,
-		collision_box = tlamp_cbox,
+		sounds = default.node_sound_wood_defaults(),
 		groups = {cracky=2,oddly_breakable_by_hand=1,
 			not_in_creative_inventory=((light ~= nil) and 1) or nil,
 		},
@@ -337,15 +458,21 @@ local function reg_lamp(suffix, nxt, tilesuffix, light, color)
 	homedecor.register("standing_lamp"..lampcolor.."_"..suffix, {
 		description = S("Standing Lamp"..colordesc),
 		mesh = "homedecor_standing_lamp.obj",
-		tiles = { "homedecor_table_standing_lamp"..lampcolor.."_"..suffix..".png" },
-		inventory_image = "homedecor_standing_lamp"..lampcolor.."_inv.png",
+		tiles = {
+			"wool_"..woolcolor..".png^[colorize:#ffffff:"..wool_brighten,
+			"homedecor_table_standing_lamp_lightbulb.png^[colorize:#ffffff:"..bulb_brighten,
+			"homedecor_generic_wood_red.png",
+			"homedecor_generic_metal_black.png^[brighten",
+		},
+		inventory_image = "homedecor_standing_lamp_foot_inv.png^(homedecor_standing_lamp_top_inv.png^[colorize:"..invcolor..")",
 		walkable = false,
 		light_source = light,
 		groups = {cracky=2,oddly_breakable_by_hand=1,
 			not_in_creative_inventory=((light ~= nil) and 1) or nil,
 		},
 		selection_box = slamp_cbox,
-		collision_box = slamp_cbox,
+		sounds = default.node_sound_wood_defaults(),
+		on_rotate = screwdriver.rotate_simple,
 		on_punch = function(pos, node, puncher)
 			node.name = "homedecor:standing_lamp"..lampcolor.."_"..repl[suffix]
 			minetest.set_node(pos, node)
@@ -353,11 +480,14 @@ local function reg_lamp(suffix, nxt, tilesuffix, light, color)
 		expand = { top="air" },
 	})
 
-	-- "bottom" in the node name is obsolete now, as "top" node doesn't exist anymore.
 	minetest.register_alias("homedecor:standing_lamp_bottom"..lampcolor.."_"..suffix, "homedecor:standing_lamp"..lampcolor.."_"..suffix)
 	minetest.register_alias("homedecor:standing_lamp_top"..lampcolor.."_"..suffix, "air")
+	minetest.register_alias("homedecor:standing_lamp_"..suffix, "homedecor:standing_lamp_white_"..suffix)
+	minetest.register_alias("homedecor:standing_lamp_whiteoff", "homedecor:standing_lamp_white_off")
+	minetest.register_alias("homedecor:table_lamp_"..suffix, "homedecor:table_lamp_white_"..suffix)
+	minetest.register_alias("homedecor:table_lamp_whiteoff", "homedecor:table_lamp_white_off")
 
-	-- for old maps that had 3dfornit`ure
+	-- for old maps that had the original 3dforniture mod
 	if lampcolor == "" then
 		minetest.register_alias("3dforniture:table_lamp_"..suffix, "homedecor:table_lamp_"..suffix)
 	end
@@ -382,11 +512,50 @@ for _, color in ipairs(dlamp_colors) do
 	homedecor.register("desk_lamp_"..color, {
 		description = S("Desk Lamp ("..color..")"),
 		mesh = "homedecor_desk_lamp.obj",
-		tiles = {"homedecor_desk_lamp_"..color..".png"},
-		inventory_image = "homedecor_desk_lamp_inv_"..color..".png",
-		wield_image = "homedecor_desk_lamp_inv_"..color..".png",
+		tiles = {
+			"homedecor_table_standing_lamp_lightbulb.png^[colorize:#ffffff:200",
+			"homedecor_generic_metal_black.png^[colorize:"..color..":150",
+			"homedecor_generic_metal_black.png",
+			"homedecor_generic_metal_black.png^[colorize:"..color..":150"
+		},
+		inventory_image = "homedecor_desk_lamp_stem_inv.png^(homedecor_desk_lamp_metal_inv.png^[colorize:"..color..":140)",
 		selection_box = dlamp_cbox,
-		collision_box = dlamp_cbox,
+		walkable = false,
 		groups = {snappy=3},
 	})
 end
+
+homedecor.register("ceiling_lamp", {
+	description = S("Ceiling Lamp"),
+	mesh = "homedecor_ceiling_lamp.obj",
+	tiles = {
+		"homedecor_generic_metal_brass.png",
+		"homedecor_ceiling_lamp_glass.png",
+		"homedecor_table_standing_lamp_lightbulb.png^[colorize:#ffffff:200",
+		"homedecor_generic_plastic_black.png^[colorize:#442d04:200",
+	},
+	inventory_image = "homedecor_ceiling_lamp_inv.png",
+	light_source = default.LIGHT_MAX,
+	groups = {snappy=3},
+	walkable = false,
+	on_punch = function(pos, node, puncher)
+		minetest.set_node(pos, {name = "homedecor:ceiling_lamp_off"})
+	end,
+})
+
+homedecor.register("ceiling_lamp_off", {
+	description = S("Ceiling Lamp (off)"),
+	mesh = "homedecor_ceiling_lamp.obj",
+	tiles = {
+		"homedecor_generic_metal_brass.png",
+		"homedecor_ceiling_lamp_glass.png",
+		"homedecor_table_standing_lamp_lightbulb.png",
+		"homedecor_generic_plastic_black.png^[colorize:#442d04:200",
+	},
+	groups = {snappy=3, not_in_creative_inventory=1},
+	walkable = false,
+	on_punch = function(pos, node, puncher)
+		minetest.set_node(pos, {name = "homedecor:ceiling_lamp"})
+	end,
+	drop = "homedecor:ceiling_lamp"
+})

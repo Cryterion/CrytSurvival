@@ -6,11 +6,10 @@ homedecor.register("ceiling_paint", {
 	tiles = { 'homedecor_ceiling_paint.png' },
 	inventory_image = 'homedecor_ceiling_paint_roller.png',
 	wield_image = 'homedecor_ceiling_paint_roller.png',
-	sunlight_propagates = true,
 	walkable = false,
 	groups = { snappy = 3 },
 	sounds = default.node_sound_leaves_defaults(),
-        selection_box = { type = "wallmounted" },
+	selection_box = { type = "wallmounted" },
 })
 
 homedecor.register("ceiling_tile", {
@@ -19,29 +18,50 @@ homedecor.register("ceiling_tile", {
 	tiles = { 'homedecor_ceiling_tile.png' },
 	wield_image = 'homedecor_ceiling_tile.png',
 	inventory_image = 'homedecor_ceiling_tile.png',
-	sunlight_propagates = true,
 	walkable = false,
 	groups = { snappy = 3 },
 	sounds = default.node_sound_leaves_defaults(),
-        selection_box = { type = "wallmounted" },
+	selection_box = { type = "wallmounted" },
 })
 
-local rug_sizes = {"small", "large"}
+local rug_types = {
+	{ "small",   "homedecor_small_rug.obj" },
+	{ "large",   { -0.5, -0.5, -0.5, 0.5, -0.4375, 0.5 } },
+	{ "persian", { -0.5, -0.5, -0.5, 0.5, -0.4375, 0.5 } }
+}
 
-for _, s in ipairs(rug_sizes) do
-homedecor.register("rug_"..s, {
-	description = S("Throw Rug ("..s..")"),
-	drawtype = 'signlike',
-	tiles = {"homedecor_rug_"..s..".png"},
-	wield_image = "homedecor_rug_"..s..".png",
-	inventory_image = "homedecor_rug_"..s..".png",
-	sunlight_propagates = true,
-	paramtype2 = "wallmounted",
-	walkable = false,
-	groups = {snappy = 3},
-	sounds = default.node_sound_leaves_defaults(),
-        selection_box = { type = "wallmounted" },
-})
+for i in ipairs(rug_types) do
+	s = rug_types[i][1]
+	m = rug_types[i][2]
+
+	local mesh = m
+	local nodebox = nil
+	local tiles = { "homedecor_rug_"..s..".png", "wool_grey.png" }
+
+	if type(m) == "table" then
+		mesh = nil
+		nodebox = {
+			type = "fixed",	
+			fixed = m
+		}
+		tiles = {
+			"homedecor_rug_"..s..".png",
+			"wool_grey.png",
+			"homedecor_rug_"..s..".png"
+		}
+	end
+
+	homedecor.register("rug_"..s, {
+		description = S("Rug ("..s..")"),
+		mesh = mesh,
+		tiles = tiles,
+		node_box = nodebox,
+		paramtype2 = "wallmounted",
+		walkable = false,
+		groups = {snappy = 3},
+		sounds = default.node_sound_leaves_defaults(),
+		selection_box = { type = "wallmounted" },
+	})
 end
 
 local pot_colors = {"black", "green", "terracotta"}
@@ -52,17 +72,61 @@ homedecor.register("flower_pot_"..p, {
 	mesh = "homedecor_flowerpot.obj",
 	tiles = {
 		"homedecor_flower_pot_"..p..".png",
-		"homedecor_potting_soil.png"
+		"default_dirt.png^[colorize:#000000:175"
 	},
 	groups = { snappy = 3, potting_soil=1 },
-	sounds = default.node_sound_leaves_defaults(),
+	sounds = default.node_sound_stone_defaults(),
 })
+end
+
+local flowers_list = {
+	{ "Rose",				"rose", 			"flowers:rose" },
+	{ "Tulip",				"tulip", 			"flowers:tulip" },
+	{ "Yellow Dandelion",	"dandelion_yellow",	"flowers:dandelion_yellow" },
+	{ "White Dandelion",	"dandelion_white",	"flowers:dandelion_white" },
+	{ "Blue Geranium",		"geranium",			"flowers:geranium" },
+	{ "Viola",				"viola",			"flowers:viola" },
+	{ "Cactus",				"cactus",			"default:cactus" },
+	{ "Bonsai",				"bonsai",			"default:sapling" }
+}
+
+for i in ipairs(flowers_list) do
+	local flowerdesc	= flowers_list[i][1]
+	local flower		= flowers_list[i][2]
+	local craftwith		= flowers_list[i][3]
+	
+	homedecor.register("potted_"..flower, {
+		description = S("Potted flower ("..flowerdesc..")"),
+		mesh = "homedecor_potted_plant.obj",
+		tiles = {
+			"homedecor_flower_pot_terracotta.png",
+			"default_dirt.png^[colorize:#000000:175",
+			"flowers_"..flower..".png"
+		},
+		walkable = false,
+		groups = {snappy = 3},
+		sounds = default.node_sound_glass_defaults(),
+		selection_box = {
+			type = "fixed",
+			fixed = { -0.2, -0.5, -0.2, 0.2, 0.3, 0.2 }
+		}
+	})
+
+	minetest.register_craft({
+		type = "shapeless",
+		output = "homedecor:potted_"..flower,
+		recipe = { craftwith, "homedecor:flower_pot_small" }
+	})
+
+	minetest.register_alias("flowers:flower_"..flower.."_pot", "homedecor:potted_"..flower)
+	minetest.register_alias("flowers:potted_"..flower, "homedecor:potted_"..flower)
+	minetest.register_alias("flowers:flower_pot", "homedecor:flower_pot_small")
 end
 
 homedecor.register("pole_brass", {
     description = S("Brass Pole"),
 	mesh = "homedecor_round_pole.obj",
-    tiles = {"homedecor_tile_brass2.png"},
+    tiles = {"homedecor_generic_metal_brass.png^homedecor_generic_metal_lines_overlay.png",},
     inventory_image = "homedecor_pole_brass_inv.png",
     wield_image = "homedecor_pole_brass_inv.png",
     selection_box = {
@@ -79,7 +143,7 @@ homedecor.register("pole_brass", {
 
 homedecor.register("pole_wrought_iron", {
     description = S("Wrought Iron Pole"),
-    tiles = {"homedecor_tile_wrought_iron2.png"},
+    tiles = { "homedecor_generic_metal_wrought_iron.png^homedecor_generic_metal_lines_overlay.png" },
     inventory_image = "homedecor_pole_wrought_iron_inv.png",
     wield_image = "homedecor_pole_wrought_iron_inv.png",
     selection_box = {
@@ -117,94 +181,63 @@ end
 
 homedecor.register("chimney", {
 	description = "Chimney",
+	mesh = "homedecor_chimney.obj",
 	tiles = {
-		"homedecor_chimney_top.png",
-		"homedecor_chimney_bottom.png",
-		"homedecor_chimney_sides.png",
-	},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.25, -0.5, -0.25, 0.25, 0.5, -0.1875},
-			{-0.25, -0.5, 0.1875, 0.25, 0.5, 0.25},
-			{-0.25, -0.5, -0.25, -0.1875, 0.5, 0.25},
-			{0.1875, -0.5, -0.25, 0.25, 0.5, 0.25},
-		}
+		"homedecor_chimney_tb.png",
+		"default_brick.png"
 	},
 	selection_box = homedecor.nodebox.bar_y(0.25),
 	groups = {cracky=3},
 	sounds = default.node_sound_stone_defaults()
 })
 
+local ft_cbox = {
+	type = "fixed",
+	fixed = { -0.5, -0.5, -0.375, 0.5, 0.3125, 0.375 }
+}
+
 homedecor.register("fishtank", {
 	description = "Fishtank",
+	mesh = "homedecor_fishtank.obj",
 	tiles = {
-		"homedecor_fishtank_top.png",
-		"homedecor_fishtank_bottom.png",
-		"homedecor_fishtank_right.png",
-		"homedecor_fishtank_left.png",
-		"homedecor_fishtank_back.png",
-		"homedecor_fishtank_front.png"
-	},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5,    -0.5,    -0.375,  0.5,    -0.4375, 0.375},
-			{-0.4375, -0.4375, -0.3125, 0.4375,  0.1875, 0.3125},
-			{-0.4375,  0.1875, -0.1875, 0.4375,  0.25,   0.1875},
-			{-0.1875,  0.0625,  0.0625, 0.1875,  0.25,   0.375},
-			{ 0.125,  -0.5,     0.25,   0.1875,  0.1875, 0.375},
-			{-0.375,   0.25,   -0.125,  0.375,   0.3125, 0.125},
-		}
+		"homedecor_generic_plastic_black.png",
+		"homedecor_fishtank_filter.png",
+		"homedecor_fishtank_fishes.png",
+		"homedecor_fishtank_gravel.png",
+		"homedecor_fishtank_water_top.png",
+		"homedecor_fishtank_sides.png",
 	},
 	use_texture_alpha = true,
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.5, -0.5, -0.375, 0.5, 0.3125, 0.375 }
-	},
-	sunlight_propagates = true,
+	selection_box = ft_cbox,
+	collision_box = ft_cbox,
 	groups = {cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_glass_defaults(),
 	on_rightclick = function(pos, node, clicker)
-		fdir = minetest.get_node(pos).param2
-		minetest.set_node(pos, {name = "homedecor:fishtank_lighted", param2 = fdir})
+		minetest.set_node(pos, {name = "homedecor:fishtank_lighted", param2 = node.param2})
 	end
 })
 
 homedecor.register("fishtank_lighted", {
-	description = "Fishtank",
+	description = "Fishtank (lighted)",
+	mesh = "homedecor_fishtank.obj",
 	tiles = {
-		"homedecor_fishtank_top.png",
-		"homedecor_fishtank_bottom.png",
-		"homedecor_fishtank_right_lighted.png",
-		"homedecor_fishtank_left_lighted.png",
-		"homedecor_fishtank_back_lighted.png",
-		"homedecor_fishtank_front_lighted.png"
+		"homedecor_generic_plastic_black.png",
+		"homedecor_fishtank_filter.png",
+		"homedecor_fishtank_fishes_lighted.png",
+		"homedecor_fishtank_gravel_lighted.png",
+		"homedecor_fishtank_water_top_lighted.png",
+		"homedecor_fishtank_sides_lighted.png",
 	},
 	light_source = LIGHT_MAX-4,
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5,    -0.5,    -0.375,  0.5,    -0.4375, 0.375},
-			{-0.4375, -0.4375, -0.3125, 0.4375,  0.1875, 0.3125},
-			{-0.4375,  0.1875, -0.1875, 0.4375,  0.25,   0.1875},
-			{-0.1875,  0.0625,  0.0625, 0.1875,  0.25,   0.375},
-			{ 0.125,  -0.5,     0.25,   0.1875,  0.1875, 0.375},
-			{-0.375,   0.25,   -0.125,  0.375,   0.3125, 0.125},
-		}
-	},
 	use_texture_alpha = true,
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.5, -0.5, -0.375, 0.5, 0.3125, 0.375 }
-	},
-	sunlight_propagates = true,
+	selection_box = ft_cbox,
+	collision_box = ft_cbox,
 	groups = {cracky=3,oddly_breakable_by_hand=3,not_in_creative_inventory=1},
 	sounds = default.node_sound_glass_defaults(),
 	on_rightclick = function(pos, node, clicker)
-		fdir = minetest.get_node(pos).param2
-		minetest.set_node(pos, {name = "homedecor:fishtank", param2 = fdir})
-	end
+		minetest.set_node(pos, {name = "homedecor:fishtank", param2 = node.param2})
+	end,
+	drop = "homedecor:fishtank",
 })
 
 homedecor.register("cardboard_box_big", {
@@ -215,7 +248,6 @@ homedecor.register("cardboard_box_big", {
 		'homedecor_cardbox_big_sides.png',
 	},
 	groups = { snappy = 3 },
-	sounds = default.node_sound_wood_defaults(),
 	infotext=S("Cardboard box"),
 	inventory = {
 		size=24,
@@ -236,7 +268,6 @@ homedecor.register("cardboard_box", {
 		}
 	},
 	groups = { snappy = 3 },
-	sounds = default.node_sound_wood_defaults(),
 	infotext=S("Cardboard box"),
 	inventory = {
 		size=8,
@@ -245,50 +276,25 @@ homedecor.register("cardboard_box", {
 
 homedecor.register("dvd_cd_cabinet", {
 	description = "DVD/CD cabinet",
+	mesh = "homedecor_dvd_cabinet.obj",
 	tiles = {
-		"homedecor_dvdcd_cabinet_top.png",
-		"homedecor_dvdcd_cabinet_top.png",
-		"homedecor_dvdcd_cabinet_sides.png",
-		"homedecor_dvdcd_cabinet_sides.png^[transformFX",
-		"homedecor_dvdcd_cabinet_back.png",
+		"default_wood.png",
 		"homedecor_dvdcd_cabinet_front.png",
-	},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, -0.5, 0, -0.4375, 0.5, 0.5},
-			{0.4375, -0.5, 0, 0.5, 0.5, 0.5},
-			{-0.0625, -0.5, 0, 0.0625, 0.5, 0.5},
-			{-0.5, 0.4375, 0, 0.5, 0.5, 0.5},
-			{-0.5, -0.5, 0, 0.5, -0.4375, 0.5},
-			{-0.5, -0.5, 0.0625, 0.5, 0.5, 0.4375},
-			{-0.375, -0.5, 0.02756, -0.125, 0.5, 0.5},
-			{0.125, -0.5, 0.01217, 0.375, 0.5, 0.5},
-		}
+		"homedecor_dvdcd_cabinet_back.png"
 	},
 	selection_box = homedecor.nodebox.slab_z(0.5),
-	groups = {choppy=2,oddly_breakable_by_hand=2,flammable=3},
+	groups = {choppy=2,oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
 })
 
 homedecor.register("filing_cabinet", {
 	description = S("Filing Cabinet"),
+	mesh = "homedecor_filing_cabinet.obj",
 	tiles = {
-		'forniture_wood.png',
-		'homedecor_filing_cabinet_bottom.png',
-		'forniture_wood.png',
-		'forniture_wood.png',
-		'forniture_wood.png',
-		'homedecor_filing_cabinet_front.png'
+		homedecor.plain_wood,
+		"homedecor_filing_cabinet_front.png",
+		"homedecor_filing_cabinet_bottom.png"
 	},
-        selection_box = { type = "regular" },
-        node_box = {
-                type = "fixed",
-		fixed = {
-			{ -8/16, -8/16, -30/64,  8/16,  8/16,   8/16 },	-- main body
-			{ -7/16, -7/16, -8/16,  7/16,  7/16,   8/16 },	-- drawer
-		}
-        },
 	groups = { snappy = 3 },
 	sounds = default.node_sound_wood_defaults(),
 	infotext=S("Filing cabinet"),
@@ -309,7 +315,7 @@ homedecor.register("pool_table", {
 		"homedecor_pool_table_baize.png",
 		"homedecor_pool_table_pockets.png",
 		"homedecor_pool_table_balls.png",
-		"homedecor_pool_table_wood.png"
+		"homedecor_generic_wood_luxury.png^[colorize:#000000:90"
 	},
 	description = "Pool Table",
 	inventory_image = "homedecor_pool_table_inv.png",
@@ -317,15 +323,18 @@ homedecor.register("pool_table", {
 	selection_box = pooltable_cbox,
 	collision_box = pooltable_cbox,
 	expand = { forward="air" },
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.disallow
 })
 
 minetest.register_alias("homedecor:pool_table_2", "air")
 
 homedecor.register("coatrack_wallmount", {
-	tiles = { "forniture_wood.png" },
+	tiles = { homedecor.plain_wood },
 	inventory_image = "homedecor_coatrack_wallmount_inv.png",
 	description = "Coatrack (wallmounted)",
-        groups = {snappy=3},
+	groups = {snappy=3},
+	sounds = default.node_sound_wood_defaults(),
 	node_box = {
 		type = "fixed",
 		fixed = {
@@ -343,24 +352,22 @@ homedecor.register("coatrack_wallmount", {
 })
 
 homedecor.register("coat_tree", {
-	tiles = { "forniture_wood.png" },
+	mesh = "homedecor_coatrack.obj",
+	tiles = {
+		homedecor.plain_wood,
+		"homedecor_generic_wood_old.png"
+	},
 	inventory_image = "homedecor_coatrack_inv.png",
 	description = "Coat tree",
 	groups = {snappy=3},
-	node_box = {
+	sounds = default.node_sound_wood_defaults(),
+	expand = { top="air" },
+	walkable = false,
+	selection_box = {
 		type = "fixed",
-		fixed = {
-			{0, -0.5, 0, 0.0625, 1.5, 0.0625}, -- NodeBox1
-			{-0.125, -0.5, -0.125, 0.1875, -0.4375, 0.1875}, -- NodeBox2
-			{0.1875, -0.5, -0.0625, 0.22, -0.4375, 0.125}, -- NodeBox3
-			{-0.0625, -0.5, 0.188, 0.125, -0.4375, 0.22}, -- NodeBox4
-			{-0.16, -0.5, -0.0625, -0.125, -0.4375, 0.125}, -- NodeBox5
-			{-0.0625, -0.5, -0.16, 0.125, -0.4375, -0.125}, -- NodeBox6
-			{-0.25, 1.1875, 0, 0.3125, 1.25, 0.0625}, -- NodeBox7
-			{0, 1.1875, -0.25, 0.0625, 1.25, 0.3125}, -- NodeBox8
-			{-0.0207468, 1.4375, -0.0207468, 0.0829876, 1.5, 0.0829876}, -- NodeBox9
-		}
+		fixed = { -0.4, -0.5, -0.4, 0.4, 1.5, 0.4 }
 	},
+	on_rotate = screwdriver.rotate_simple
 })
 
 local cutlery_cbox = {
@@ -379,7 +386,8 @@ homedecor.register("cutlery_set", {
 	description = "Cutlery set",
 	groups = {snappy=3},
 	selection_box = cutlery_cbox,
-	collision_box = cutlery_cbox
+	walkable = false,
+	sounds = default.node_sound_glass_defaults(),
 })
 
 local bottle_cbox = {
@@ -400,40 +408,45 @@ local bottle_colors = {"brown", "green"}
 
 for _, b in ipairs(bottle_colors) do
 
-homedecor.register("bottle_"..b, {
-	tiles = { "homedecor_bottle_"..b..".png" },
-	inventory_image = "homedecor_bottle_"..b.."_inv.png",
-	description = "Bottle ("..b..")",
-	mesh = "homedecor_bottle.obj",
-	sunlight_propagates = true,
-	groups = {snappy=3},
-	collision_box = bottle_cbox,
-	selection_box = bottle_cbox
-})
+	homedecor.register("bottle_"..b, {
+		tiles = { "homedecor_bottle_"..b..".png" },
+		inventory_image = "homedecor_bottle_"..b.."_inv.png",
+		description = "Bottle ("..b..")",
+		mesh = "homedecor_bottle.obj",
+		walkable = false,
+		groups = {snappy=3},
+		sounds = default.node_sound_glass_defaults(),
+		selection_box = bottle_cbox
+	})
 
--- 4-bottle sets
+	-- 4-bottle sets
 
-homedecor.register("4_bottles_"..b, {
-	tiles = { "homedecor_bottle_"..b..".png" },
-	inventory_image = "homedecor_4_bottles_"..b.."_inv.png",
-	description = "Four "..b.." bottles",
-	mesh = "homedecor_4_bottles.obj",
-	sunlight_propagates = true,
-	groups = {snappy=3},
-	collision_box = fbottle_cbox,
-	selection_box = fbottle_cbox
-})
-
+	homedecor.register("4_bottles_"..b, {
+		tiles = {
+			"homedecor_bottle_"..b..".png",
+			"homedecor_bottle_"..b..".png"
+		},
+		inventory_image = "homedecor_4_bottles_"..b.."_inv.png",
+		description = "Four "..b.." bottles",
+		mesh = "homedecor_4_bottles.obj",
+		walkable = false,
+		groups = {snappy=3},
+		sounds = default.node_sound_glass_defaults(),
+		selection_box = fbottle_cbox
+	})
 end
 
 homedecor.register("4_bottles_multi", {
-	tiles = { "homedecor_4_bottles_multi.png" },
+	tiles = {
+		"homedecor_bottle_brown.png",
+		"homedecor_bottle_green.png"
+	},
 	inventory_image = "homedecor_4_bottles_multi_inv.png",
 	description = "Four misc brown/green bottles",
-	mesh = "homedecor_4_bottles_multi.obj",
-	sunlight_propagates = true,
+	mesh = "homedecor_4_bottles.obj",
 	groups = {snappy=3},
-	collision_box = fbottle_cbox,
+	walkable = false,
+	sounds = default.node_sound_glass_defaults(),
 	selection_box = fbottle_cbox
 })
 
@@ -444,14 +457,13 @@ homedecor.register("dartboard", {
 	inventory_image = "homedecor_dartboard_inv.png",
 	wield_image = "homedecor_dartboard_inv.png",
 	paramtype2 = "wallmounted",
-	sunlight_propagates = true,
 	walkable = false,
 	selection_box = {
 		type = "wallmounted",
 	},
 	groups = {choppy=2,dig_immediate=2,attached_node=1},
 	legacy_wallmounted = true,
-	sounds = default.node_sound_defaults(),
+	sounds = default.node_sound_wood_defaults(),
 })
 
 local piano_cbox = {
@@ -462,9 +474,9 @@ local piano_cbox = {
 homedecor.register("piano", {
 	mesh = "homedecor_piano.obj",
 	tiles = {
+		"homedecor_generic_wood_luxury.png^[colorize:#000000:175",
 		"homedecor_piano_keys.png",
-		"homedecor_tile_brass2.png",
-		"homedecor_piano_wood.png"
+		"homedecor_generic_metal_brass.png",
 	},
 	inventory_image = "homedecor_piano_inv.png",
 	description = "Piano",
@@ -472,75 +484,50 @@ homedecor.register("piano", {
 	selection_box = piano_cbox,
 	collision_box = piano_cbox,
 	expand = { right="air" },
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.disallow
 })
 
 minetest.register_alias("homedecor:piano_left", "homedecor:piano")
 minetest.register_alias("homedecor:piano_right", "air")
 
+local tr_cbox = {
+	type = "fixed",
+	fixed = { -0.3125, -0.5, -0.1875, 0.3125, 0.125, 0.1875 }
+}
+
 homedecor.register("trophy", {
-        description = "Trophy",
+	description = "Trophy",
+	mesh = "homedecor_trophy.obj",
 	tiles = {
-		"default_gold_block.png"
+		"default_wood.png",
+		"homedecor_generic_metal_gold.png"
 	},
 	inventory_image = "homedecor_trophy_inv.png",
-        groups = { snappy=3 },
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.125, -0.5, -0.125, 0.1875, -0.4375, 0.1875}, -- NodeBox1
-			{-0.0625, -0.4375, -0.0625, 0.125, -0.375, 0.125}, -- NodeBox2
-			{-0.02, -0.375, -0.02, 0.0825, -0.1875, 0.0825}, -- NodeBox3
-			{-0.0625, -0.1875, -0.0625, 0.125, -0.125, 0.125}, -- NodeBox4
-			{-0.125, -0.1875, -0.0625, -0.0625, 0.125, 0.125}, -- NodeBox5
-			{0.125, -0.1875, -0.0625, 0.1875, 0.125, 0.125}, -- NodeBox6
-			{-0.125, -0.1875, 0.125, 0.1875, 0.125, 0.1875}, -- NodeBox7
-			{-0.125, -0.1875, -0.125, 0.1875, 0.125, -0.0625}, -- NodeBox8
-			{-0.0625, -0.25, -0.0625, 0.125, -0.1875, 0.125}, -- NodeBox9
-			{0.1875, 0.05, 0, 0.23, 0.0925, 0.0625}, -- NodeBox10
-			{0.1875, -0.15, 0, 0.23, -0.11, 0.0625}, -- NodeBox11
-			{0.23, -0.15, 0, 0.2725, 0.0925, 0.0625}, -- NodeBox12
-			{-0.1675, -0.15, 0, -0.125, -0.11, 0.0625}, -- NodeBox13
-			{-0.1675, 0.05, 0, -0.125, 0.0925, 0.0625}, -- NodeBox14
-			{-0.21, -0.15, 0, -0.1675, 0.0925, 0.0625}, -- NodeBox15
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.21, -0.5, -0.125, 0.2725, 0.125, 0.1875 }
-	}
+	groups = { snappy=3 },
+	walkable = false,
+	selection_box = tr_cbox,
 })
+
+local sb_cbox = {
+	type = "fixed",
+	fixed = { -0.4, -0.5, -0.5, 0.4, 0.375, 0.5 }
+}
 
 homedecor.register("sportbench", {
 	description = "Sport bench",
+	mesh = "homedecor_sport_bench.obj",
 	tiles = {
-		"homedecor_sportbench_top.png",
-		"wool_black.png",
-		"homedecor_sportbench_left.png^[transformFX",
-		"homedecor_sportbench_left.png",
-		"homedecor_sportbench_bottom.png",
-		"homedecor_sportbench_front.png"
+		"homedecor_generic_metal_wrought_iron.png",
+		"homedecor_generic_metal_bright.png",
+		"homedecor_generic_metal_black.png",
+		"wool_black.png"
 	},
+	inventory_image = "homedecor_sport_bench_inv.png",
 	groups = { snappy=3 },
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.1875, -0.3125, -0.5, 0.1875, -0.25, 0.5}, -- NodeBox1
-			{-0.1875, -0.5, -0.5, -0.125, -0.3125, -0.4375}, -- NodeBox2
-			{0.125, -0.5, -0.5, 0.1875, -0.3125, -0.4375}, -- NodeBox3
-			{0.1875, -0.5, 0.375, 0.25, 0.375, 0.4375}, -- NodeBox4
-			{-0.25, -0.5, 0.375, -0.1875, 0.375, 0.4375}, -- NodeBox5
-			{-0.5, 0.125, 0.36, 0.5, 0.14, 0.375}, -- NodeBox6
-			{0.3125, 0, 0.225, 0.35, 0.285, 0.5}, -- NodeBox7
-			{-0.35, 0, 0.225, -0.3125, 0.285, 0.5}, -- NodeBox8
-			{-0.1875, -0.375, 0.375, 0.1875, -0.3125, 0.4375}, -- NodeBox9
-			{-0.23, 0.11, 0.33, -0.2075, 0.125, 0.375}, -- NodeBox10
-			{0.2075, 0.11, 0.33, 0.23, 0.125, 0.375}, -- NodeBox11
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.4, -0.5, -0.5, 0.4, 0.375, 0.5 }
-	}
+	selection_box = sb_cbox,
+	walkable = false,
+	sounds = default.node_sound_wood_defaults(),
 })
 
 local skate_cbox = {
@@ -556,37 +543,21 @@ homedecor.register("skateboard", {
 	description = "Skateboard",
 	groups = {snappy=3},
 	selection_box = skate_cbox,
-	collision_box = skate_cbox,
+	walkable = false,
 	sounds = default.node_sound_wood_defaults(),
 	on_place = minetest.rotate_node
 })
 
 homedecor.register("beer_tap", {
 	description = "Beer tap",
+	mesh = "homedecor_beer_taps.obj",
 	tiles = {
-		"homedecor_beertap_front.png",
-		"homedecor_beertap_front.png",
-		"homedecor_beertap_right.png",
-		"homedecor_beertap_right.png^[transformFX",
-		"homedecor_beertap_front.png",
-		"homedecor_beertap_front.png"
+		"homedecor_generic_metal_bright.png",
+		"homedecor_generic_metal_black.png",
 	},
 	inventory_image = "homedecor_beertap_inv.png",
 	groups = { snappy=3 },
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.25, -0.5, -0.4375, 0.25, -0.48, 0}, -- NodeBox1
-			{-0.0625, -0.48, -0.1875, 0.0625, 0.125, -0.0625}, -- NodeBox2
-			{-0.1875, 0, -0.375, -0.125, 0.0315, -0.125}, -- NodeBox3
-			{-0.1875, 0, -0.1875, 0.1875, 0.0315, -0.125}, -- NodeBox4
-			{0.125, 0, -0.375, 0.1875, 0.0315, -0.125}, -- NodeBox5
-			{0.135, 0.0315, -0.3225, 0.1775, 0.235, -0.29}, -- NodeBox6
-			{-0.1775, 0.0315, -0.3225, -0.135, 0.235, -0.29}, -- NodeBox7
-			{-0.1675, -0.0825, -0.355, -0.145, 0, -0.3325}, -- NodeBox8
-			{0.145, -0.0825, -0.355, 0.1675, 0, -0.3325}, -- NodeBox9
-		}
-	},
+	walkable = false,
 	selection_box = {
 		type = "fixed",
 		fixed = { -0.25, -0.5, -0.4375, 0.25, 0.235, 0 }
@@ -621,23 +592,25 @@ homedecor.register("beer_mug", {
 	tiles = { "homedecor_beer_mug.png" },
 	inventory_image = "homedecor_beer_mug_inv.png",
 	groups = { snappy=3, oddly_breakable_by_hand=3 },
+	walkable = false,
 	sounds = default.node_sound_glass_defaults(),
 	selection_box = beer_cbox,
-	collision_box = beer_cbox
+	on_use = minetest.item_eat(2)
 })
 
 homedecor.register("tool_cabinet", {
 	description = "Metal tool cabinet and work table",
 	mesh = "homedecor_tool_cabinet.obj",
 	tiles = {
-		"homedecor_red_metal.png",
+		"homedecor_generic_metal_black.png^[colorize:#ff0000:150",
 		"homedecor_tool_cabinet_drawers.png",
-		"homedecor_green_metal.png",
-		"forniture_metal.png",
-		"homedecor_bright_metal.png",
+		"homedecor_generic_metal_black.png^[colorize:#006000:150",
+		"homedecor_generic_metal_black.png^[brighten",
+		"homedecor_generic_metal_bright.png",
 		"homedecor_tool_cabinet_misc.png",
 	},
 	inventory_image = "homedecor_tool_cabinet_inv.png",
+	on_rotate = screwdriver.rotate_simple,
 	groups = { snappy=3 },
 	selection_box = homedecor.nodebox.slab_y(2),
 	expand = { top="air" },
@@ -651,19 +624,31 @@ minetest.register_alias("homedecor:tool_cabinet_top", "air")
 
 homedecor.register("calendar", {
 	description = "Calendar",
-	drawtype = "signlike",
+	mesh = "homedecor_calendar.obj",
 	tiles = {"homedecor_calendar.png"},
-	inventory_image = "homedecor_calendar.png",
-	wield_image = "homedecor_calendar.png",
+	inventory_image = "homedecor_calendar_inv.png",
+	wield_image = "homedecor_calendar_inv.png",
 	paramtype2 = "wallmounted",
-	sunlight_propagates = true,
 	walkable = false,
 	selection_box = {
 		type = "wallmounted",
+		wall_side =   { -8/16, -8/16, -4/16, -5/16,  5/16, 4/16 },
+		wall_bottom = { -4/16, -8/16, -8/16,  4/16, -5/16, 5/16 },
+		wall_top =    { -4/16,  5/16, -8/16,  4/16,  8/16, 5/16 }
 	},
-	groups = {choppy=2,dig_immediate=2,attached_node=1},
+	groups = {choppy=2,attached_node=1},
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		local date = os.date("%Y-%m-%d") -- ISO 8601 format
+		meta:set_string("infotext", "Date (right-click to update):\n"..date)
+	end,
+	on_rightclick = function(pos, node, clicker)
+		local meta = minetest.get_meta(pos)
+		local date = os.date("%Y-%m-%d")
+		meta:set_string("infotext", "Date (right-click to update):\n"..date)
+	end
 })
 
 local globe_cbox = {
@@ -674,19 +659,30 @@ local globe_cbox = {
 homedecor.register("desk_globe", {
 	description = "Desk globe",
 	mesh = "homedecor_desk_globe.obj",
-	tiles = {"homedecor_desk_globe.png"},
+	tiles = {
+		"homedecor_generic_wood_red.png",
+		"homedecor_generic_metal_black.png^[brighten",
+		"homedecor_earth.png"
+	},
 	inventory_image = "homedecor_desk_globe_inv.png",
 	selection_box = globe_cbox,
 	collision_box = globe_cbox,
 	groups = {choppy=2},
-	sounds = default.node_sound_defaults(),
+	walkable = false,
+	sounds = default.node_sound_wood_defaults(),
 })
 
 local wine_cbox = homedecor.nodebox.slab_z(0.25)
 homedecor.register("wine_rack", {
 	description = "Wine Rack",
 	mesh = "homedecor_wine_rack.obj",
-	tiles = {"homedecor_wine_rack.png"},
+	tiles = {
+		"homedecor_generic_wood_red.png",
+		"homedecor_bottle_brown.png",
+		"homedecor_bottle_brown2.png",
+		"homedecor_bottle_brown3.png",
+		"homedecor_bottle_brown4.png"
+	},
 	inventory_image = "homedecor_wine_rack_inv.png",
 	groups = {choppy=2},
 	selection_box = wine_cbox,
@@ -704,11 +700,242 @@ for _, i in ipairs(n) do
 	homedecor.register("picture_frame"..i, {
 		description = S("Picture Frame"),
 		mesh = "homedecor_picture_frame.obj",
-		tiles = { "homedecor_picture_frame"..i..".png" },
+		tiles = {
+			"homedecor_picture_frame_image"..i..".png",
+			"homedecor_generic_wood_luxury.png^[colorize:#000000:50",
+			"homedecor_picture_frame_back.png",
+		},
 		inventory_image = "homedecor_picture_frame"..i.."_inv.png",
 		wield_image = "homedecor_picture_frame"..i.."_inv.png",
 		groups = {snappy = 3},
 		selection_box = pframe_cbox,
-		collision_box = pframe_cbox,
+		walkable = false,
+		sounds = default.node_sound_glass_defaults()
 	})
 end
+
+local p_cbox = {
+	type = "fixed",
+	fixed = {
+		{ -0.5, -0.5, 0.4375, 0.5, 0.5, 0.5 }
+	}
+}
+
+for i = 1,20 do
+	homedecor.register("painting_"..i, {
+		description = "Decorative painting #"..i,
+		mesh = "homedecor_painting.obj",
+		tiles = {
+			"default_wood.png",
+			"homedecor_blank_canvas.png",
+			"homedecor_painting"..i..".png"
+		},
+		selection_box = p_cbox,
+		walkable = false,
+		groups = {snappy=3},
+		sounds = default.node_sound_wood_defaults(),
+	})
+end
+
+homedecor.banister_materials = {
+	{	"wood",
+		"wood",
+		"default_wood.png",
+		"default_wood.png",
+		"group:wood",
+		"group:stick",
+		"",
+		""
+	},
+	{	"white_dark",
+		"dark topped",
+		homedecor.white_wood,
+		homedecor.dark_wood,
+		"group:wood",
+		"group:stick",
+		"dye:brown",
+		"dye:white"
+	},
+	{	"brass",
+		"brass",
+		homedecor.white_wood,
+		"homedecor_generic_metal_brass.png",
+		"technic:brass_ingot",
+		"group:stick",
+		"",
+		"dye:white"
+	},
+	{	"wrought_iron",
+		"wrought iron",
+		"homedecor_generic_metal_wrought_iron.png",
+		"homedecor_generic_metal_wrought_iron.png",
+		"homedecor:pole_wrought_iron",
+		"homedecor:pole_wrought_iron",
+		"",
+		""
+	}
+}
+
+for _, side in ipairs({"diagonal_left", "diagonal_right", "horizontal"}) do
+
+	for i in ipairs(homedecor.banister_materials) do
+
+		local name = homedecor.banister_materials[i][1]
+		local nodename = "banister_"..name.."_"..side
+
+		local groups = { snappy = 3, not_in_creative_inventory = 1 }
+		local cbox = {
+			type = "fixed",
+			fixed = { -9/16, -3/16, 5/16, 9/16, 24/16, 8/16 }
+		}
+
+		if side == "horizontal" then
+			groups = { snappy = 3 }
+			cbox = {
+				type = "fixed",
+				fixed = { -8/16, -8/16, 5/16, 8/16, 8/16, 8/16 }
+			}
+		else
+			minetest.register_alias(string.gsub("homedecor:"..nodename, "diagonal_", ""), "homedecor:"..nodename)
+		end
+
+		homedecor.register(nodename, {
+			description = S("Banister for Stairs ("..homedecor.banister_materials[i][2]..", "..side..")"),
+			mesh = "homedecor_banister_"..side..".obj",
+			tiles = {
+				homedecor.banister_materials[i][3],
+				homedecor.banister_materials[i][4]
+			},
+			inventory_image = "homedecor_banister_"..name.."_inv.png",
+			groups = groups,
+			selection_box = cbox,
+			collision_box = cbox,
+			on_place = homedecor.place_banister,
+			drop = "homedecor:banister_"..name.."_horizontal",
+		})
+	end
+end
+
+homedecor.register("spiral_staircase", {
+	description = "Spiral Staircase",
+	mesh = "homedecor_spiral_staircase.obj",
+	tiles = {
+		"homedecor_generic_metal_wrought_iron.png",
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = { -1.5, -0.5, -1.5, 0.5, 2.5, 0.5 }
+	},
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5625, -0.5, -0.5625, -0.4375, 2.5, -0.4375}, -- NodeBox9
+			{-0.5, -0.5, -0.5, 0.5, -0.4375, 0}, -- NodeBox14
+			{-0.5, -0.125, -0.5, -0.25, -0.0625, 0.5}, -- NodeBox15
+			{-0.25, -0.125, -0.0625, 0, -0.0625, 0.5}, -- NodeBox16
+			{-1, 0.25, -0.5, -0.5, 0.3125, 0.5}, -- NodeBox17
+			{-1.5, 0.625, -0.5, -0.5, 0.6875, -0.25}, -- NodeBox18
+			{-1.5, 0.625, -0.25, -0.9375, 0.6875, 0}, -- NodeBox19
+			{-1.5, 1, -1, -0.5, 1.0625, -0.5}, -- NodeBox20
+			{-0.75, 1.375, -1.5, -0.5, 1.4375, -0.5}, -- NodeBox21
+			{-1, 1.375, -1.5, -0.75, 1.4375, -1}, -- NodeBox22
+			{-0.5, 1.75, -1.5, 0.0625, 1.8125, -0.5}, -- NodeBox23
+			{-0.5, 2.125, -0.8125, 0.5, 2.1875, -0.5}, -- NodeBox24
+			{-0.0625, 2.125, -1.0625, 0.5, 2.1875, -0.75}, -- NodeBox25
+			{-1.5, -0.125, 0.4375, 0.5, 1.625, 0.5}, -- NodeBox26
+			{-1.5, 1.5625, -1.5, -1.4375, 2.875, 0.5}, -- NodeBox27
+			{-1.5, 1.75, -1.5, 0.5, 3.3125, -1.4375}, -- NodeBox28
+			{0.4375, -0.5, -0.5, 0.5, 0.875, 0.5}, -- NodeBox29
+			{0.4375, 2.125, -1.5, 0.5, 3.3125, 0.5}, -- NodeBox30
+		}
+	},
+	groups = {choppy=2},
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.rotate_simple,
+	after_place_node = function(pos, placer, itemstack, pointed_thing)
+		local fdir = minetest.dir_to_facedir(placer:get_look_dir())
+		local leftx =  homedecor.fdir_to_left[fdir+1][1]
+		local leftz =  homedecor.fdir_to_left[fdir+1][2]
+		local revx  = -homedecor.fdir_to_fwd[fdir+1][1]
+		local revz  = -homedecor.fdir_to_fwd[fdir+1][2]
+
+		local corner1 = { x = pos.x + leftx + revx, y = pos.y, z = pos.z + leftz + revz}
+		local corner2 = { x = pos.x, y = pos.y + 2, z = pos.z }
+
+		local minp = { x = math.min(corner1.x, corner2.x),
+		               y = math.min(corner1.y, corner2.y),
+		               z = math.min(corner1.z, corner2.z) }
+
+		local maxp = { x = math.max(corner1.x, corner2.x),
+		               y = math.max(corner1.y, corner2.y),
+		               z = math.max(corner1.z, corner2.z) }
+
+		if #minetest.find_nodes_in_area(minp, maxp, "air") < 11 then
+			minetest.set_node(pos, {name = "air"})
+			minetest.chat_send_player(placer:get_player_name(), "This object takes up a 2x3x2 block of space (the bottom step goes in the forward-right corner), and some of it is occupied!" )
+			return true
+		end
+
+		local belownode = minetest.get_node({ x = pos.x, y = pos.y - 1, z = pos.z })
+
+		if belownode and belownode.name == "homedecor:spiral_staircase" then
+			local newpos = { x = pos.x, y = pos.y + 2, z = pos.z }
+			minetest.set_node(pos, { name = "air" })
+			minetest.set_node(newpos, { name = "homedecor:spiral_staircase", param2 = belownode.param2 })
+		end
+	end
+})
+
+minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
+
+	local belownode = minetest.get_node({ x = pos.x, y = pos.y - 1, z = pos.z })
+
+	if belownode and belownode.name == "homedecor:spiral_staircase" then
+
+		minetest.set_node(pos, { name = "air" })
+
+		local newpos = { x = pos.x, y = pos.y + 2, z = pos.z }
+		local checknode = minetest.get_node(newpos)
+
+		if checknode and checknode.name == "air" then
+			local fdir = minetest.dir_to_facedir(placer:get_look_dir())
+			minetest.set_node(newpos, { name = newnode.name, param2 = fdir })
+		else
+			return true
+		end
+	end
+end)
+
+local svm_cbox = {
+	type = "fixed",
+	fixed = {-0.5, -0.5, -0.5, 0.5, 1.5, 0.5}
+}
+
+homedecor.register("soda_machine", {
+	description = "Soda Vending Machine",
+	mesh = "homedecor_soda_machine.obj",
+	tiles = {"homedecor_soda_machine.png"},
+	groups = {snappy=3},
+	selection_box = svm_cbox,
+	collision_box = svm_cbox,
+	expand = { top="air" },
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.rotate_simple,
+	on_punch = function(pos, node, puncher, pointed_thing)
+		local wielditem = puncher:get_wielded_item()
+		local wieldname = wielditem:get_name()
+		local fdir_to_fwd = { {0, -1}, {-1, 0}, {0, 1}, {1, 0} }
+		local fdir = node.param2
+		local pos_drop = { x=pos.x+fdir_to_fwd[fdir+1][1], y=pos.y, z=pos.z+fdir_to_fwd[fdir+1][2] }
+		if wieldname == "homedecor:coin" then
+			wielditem:take_item()
+			puncher:set_wielded_item(wielditem)
+			minetest.spawn_item(pos_drop, "homedecor:soda_can")
+			minetest.sound_play("insert_coin", {
+				pos=pos, max_hear_distance = 5
+			})
+		else
+			minetest.chat_send_player(puncher:get_player_name(), "Please insert a coin in the machine.")
+		end
+	end
+})

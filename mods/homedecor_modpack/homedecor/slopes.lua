@@ -1,5 +1,3 @@
--- Various kinds of shingles
-
 local S = homedecor.gettext
 
 local slope_cbox = {
@@ -36,50 +34,70 @@ local icorner_cbox = {
 }
 
 homedecor.register_outer_corner = function(modname, subname, groups, slope_image, description)
+
+	local tiles = slope_image
+
+	if type(slope_image) ~= "table" then
+		tiles = { "homedecor_slope_outer_corner_"..slope_image..".png" }
+	end
+
 	minetest.register_node(modname..":shingle_outer_corner_" .. subname, {
 		description = S(description.. " (outer corner)"),
 		drawtype = "mesh",
 		mesh = "homedecor_slope_outer_corner.obj",
-		tiles = { "homedecor_slope_outer_corner_"..slope_image..".png" },
+		tiles = tiles,
 		paramtype = "light",
 		paramtype2 = "facedir",
-		walkable = true,
 		selection_box = ocorner_cbox,
 		collision_box = ocorner_cbox,
 		groups = groups,
-		on_place = minetest.rotate_node
+		on_place = minetest.rotate_node,
+		sounds = default.node_sound_wood_defaults()
 	})
 end
 
 homedecor.register_inner_corner = function(modname, subname, groups, slope_image, description)
+
+	local tiles = slope_image
+
+	if type(slope_image) ~= "table" then
+		tiles = { "homedecor_slope_outer_corner_"..slope_image..".png" }
+	end
+
 	minetest.register_node(modname..":shingle_inner_corner_" .. subname, {
 		description = S(description.. " (inner corner)"),
 		drawtype = "mesh",
 		mesh = "homedecor_slope_inner_corner.obj",
-		tiles = { "homedecor_slope_inner_corner_"..slope_image..".png" },
+		tiles = tiles,
 		paramtype = "light",
 		paramtype2 = "facedir",
-		walkable = true,
-		selection_box = { type = "regular" },
 		collision_box = icorner_cbox,
 		groups = groups,
-		on_place = minetest.rotate_node
+		on_place = minetest.rotate_node,
+		sounds = default.node_sound_wood_defaults()
 	})
 end
 
 homedecor.register_slope = function(modname, subname, recipeitem, groups, slope_image, description)
+
+	local tiles = slope_image
+
+	if type(slope_image) ~= "table" then
+		tiles = { "homedecor_slope_outer_corner_"..slope_image..".png" }
+	end
+
 	minetest.register_node(modname..":shingle_side_" .. subname, {
 		description = S(description),
 		drawtype = "mesh",
 		mesh = "homedecor_slope.obj",
-		tiles = { "homedecor_slope_"..slope_image..".png" },
+		tiles = tiles,
 		paramtype = "light",
 		paramtype2 = "facedir",
-		walkable = true,
 		selection_box = slope_cbox,
 		collision_box = slope_cbox,
 		groups = groups,
-		on_place = minetest.rotate_node
+		on_place = minetest.rotate_node,
+		sounds = default.node_sound_wood_defaults()
 	})
 
 	-- convert between flat shingles and slopes
@@ -201,51 +219,65 @@ end
 
 -- corners
 
-homedecor.register_roof("homedecor", "wood",
-	{ snappy = 3 },
+homedecor.register_roof(
+	"homedecor",
 	"wood",
+	{ snappy = 3 },
+	{ "homedecor_shingles_wood.png" },
 	"Wood Shingles"
 )
 
-homedecor.register_roof("homedecor", "asphalt",
-	{ snappy = 3 },
+homedecor.register_roof(
+	"homedecor",
 	"asphalt",
+	{ snappy = 3 },
+	{ "homedecor_shingles_asphalt.png" },
 	"Asphalt Shingles"
 )
 
-homedecor.register_roof("homedecor", "terracotta",
-	{ snappy = 3 },
+homedecor.register_roof(
+	"homedecor",
 	"terracotta",
+	{ snappy = 3 },
+	{ "homedecor_shingles_terracotta.png" },
 	"Terracotta Shingles"
 )
 
 -- register just the slopes
 
-homedecor.register_slope("homedecor", "wood",
+homedecor.register_slope(
+	"homedecor",
+	"wood",
 	"homedecor:shingles_wood",
 	{ snappy = 3 },
-	"wood",
+	{ "homedecor_shingles_wood.png" },
 	"Wood Shingles"
 )
 
-homedecor.register_slope("homedecor", "asphalt",
+homedecor.register_slope(
+	"homedecor",
+	"asphalt",
 	"homedecor:shingles_asphalt",
 	{ snappy = 3 },
-	"asphalt",
+	{ "homedecor_shingles_asphalt.png" },
 	"Asphalt Shingles"
 )
 
-homedecor.register_slope("homedecor", "terracotta",
+homedecor.register_slope(
+	"homedecor",
+	"terracotta",
 	"homedecor:shingles_terracotta",
 	{ snappy = 3 },
-	"terracotta",
+	{ "homedecor_shingles_terracotta.png" },
 	"Terracotta Shingles"
 )
 
-homedecor.register_slope("homedecor", "glass",
+homedecor.register_slope(
+	"homedecor",
+	"glass",
 	"homedecor:shingles_glass",
 	{ snappy = 3 },
-	"glass",
+	{ "homedecor_shingles_glass.png", "homedecor_shingles_wood.png" },
 	"Glass Shingles"
 )
 

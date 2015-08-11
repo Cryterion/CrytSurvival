@@ -10,7 +10,24 @@
 --		{ delta = {entity position for 90° yaw}, exact yaw expression }
 -- }
 
+-- CWz's keyword interact mod uses this setting.
+local current_keyword = minetest.setting_get("interact_keyword") or "iaccept"
+
 signs_lib = {}
+screwdriver = screwdriver or {}
+
+signs_lib.wallmounted_rotate = function(pos, node, user, mode, new_param2)
+	if mode ~= screwdriver.ROTATE_AXIS then return false end
+	minetest.swap_node(pos, {name = node.name, param2 = (node.param2 + 1) % 6})
+	for _, v in ipairs(minetest.get_objects_inside_radius(pos, 0.5)) do
+		local e = v:get_luaentity()
+		if e and e.name == "signs:text" then
+			v:remove()
+		end
+	end
+	signs_lib.update_sign(pos)
+	return true
+end
 
 signs_lib.modpath = minetest.get_modpath("signs_lib")
 
@@ -107,6 +124,9 @@ signs_lib.sign_node_list = {
 		"signs:sign_wall_red",
 		"signs:sign_wall_white_red",
 		"signs:sign_wall_white_black",
+		"signs:sign_wall_orange",
+		"signs:sign_wall_blue",
+		"signs:sign_wall_brown",
 		"locked_sign:sign_wall_locked"
 }
 
@@ -154,8 +174,7 @@ local PNG_HDR = string.char(0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
 -- Read the image size from a PNG file.
 -- Returns image_w, image_h.
 -- Only the LSB is read from each field!
-local function read_char_size(c)
-	local filename = FONT_FMT:format(TP, c)
+local function read_image_size(filename)
 	local f = io.open(filename, "rb")
 	f:seek("set", 0x0)
 	local hdr = f:read(8)
@@ -174,6 +193,7 @@ end
 -- Set by build_char_db()
 local LINE_HEIGHT
 local SIGN_WIDTH
+local COLORBGW, COLORBGH
 
 -- Size of the canvas, in characters.
 -- Please note that CHARS_PER_LINE is multiplied by the average character
@@ -189,10 +209,7 @@ local MAX_INPUT_CHARS = 600
 
 -- This holds the individual character widths.
 -- Indexed by the actual character (e.g. charwidth["A"])
-local charwidth = { }
-
--- File to cache the font size to.
-local CHARDB_FILE = minetest.get_worldpath().."/signs_lib_chardb"
+local charwidth
 
 -- helper functions to trim sign text input/output
 
@@ -200,123 +217,30 @@ local function trim_input(text)
 	return text:sub(1, math.min(MAX_INPUT_CHARS, text:len()))
 end
 
--- Returns true if any file differs from cached one.
-local function check_random_chars()
-	for i = 1, 5 do
-		local c = math.random(32, 126)
-		local w, h = read_char_size(c)
-
-		-- File is not a PNG... wut?
-		if not (w and h) then return true end
-
-		local ch = string.char(c)
-		if  (not charwidth[ch])                     -- Char is not cached.
-		 or (charwidth[ch] ~= w)                    -- Width differs.
-		 or (LINE_HEIGHT and (LINE_HEIGHT ~= h))    -- Height differs
-		 then
-			-- In any case, file is different; rebuild cache.
-			return true
-		end
-	end
-	-- OK, our superficial check passed. If the textures are messed up,
-	-- it's not our problem.
-	return false
-end
-
 local function build_char_db()
 
-	LINE_HEIGHT = nil
-	SIGN_WIDTH = nil
+	charwidth = { }
 
 	-- To calculate average char width.
 	local total_width = 0
 	local char_count = 0
 
-	-- Try to load cached data to avoid heavy disk I/O.
-
-	local cdbf = io.open(CHARDB_FILE, "rt")
-
-	if cdbf then
-		minetest.log("info", "[signs_lib] "..S("Reading cached character database."))
-		for line in cdbf:lines() do
-			local ch, w = line:match("(0x[0-9A-Fa-f]+)%s+([0-9][0-9]*)")
-			if ch and w then
-				local c = tonumber(ch)
-				w = tonumber(w)
-				if c and w then
-					if c == 0 then
-						LINE_HEIGHT = w
-					elseif (c >= 32) and (c < 127) then
-						charwidth[string.char(c)] = w
-						total_width = total_width + w
-						char_count = char_count + 1
-					end
-				end
-			end
-		end
-		cdbf:close()
-		if LINE_HEIGHT then
-			-- Check some random characters to see if the file on disk differs
-			-- from the cached one. If so, then ditch cached data and rebuild
-			-- (font probably was changed).
-			if check_random_chars() then
-				LINE_HEIGHT = nil
-				minetest.log("info", "[signs_lib] "
-					..S("Font seems to have changed. Rebuilding cache.")
-				)
-			end
-		else
-			minetest.log("warning", "[signs_lib] "
-				..S("Could not find font line height in cached DB. Trying brute force.")
-			)
+	for c = 32, 126 do
+		local w, h = read_image_size(FONT_FMT:format(TP, c))
+		if w and h then
+			local ch = string.char(c)
+			charwidth[ch] = w
+			total_width = total_width + w
+			char_count = char_count + 1
 		end
 	end
 
-	if not LINE_HEIGHT then
-		-- OK, something went wrong... try brute force loading from texture files.
-
-		charwidth = { }
-
-		total_width = 0
-		char_count = 0
-
-		for c = 32, 126 do
-			local w, h = read_char_size(c)
-			if w and h then
-				local ch = string.char(c)
-				charwidth[ch] = w
-				total_width = total_width + w
-				char_count = char_count + 1
-				if not LINE_HEIGHT then LINE_HEIGHT = h end
-			end
-		end
-
-		if not LINE_HEIGHT then
-			error("Could not find font line height.")
-		end
-
-	end
+	COLORBGW, COLORBGH = read_image_size(TP.."/slc_n.png")
+	assert(COLORBGW and COLORBGH, "error reading bg dimensions")
+	LINE_HEIGHT = COLORBGH
 
 	-- XXX: Is there a better way to calc this?
 	SIGN_WIDTH = math.floor((total_width / char_count) * CHARS_PER_LINE)
-
-	-- Try to save cached list back to disk.
-
-	local e -- Note: `cdbf' is already declared local above.
-	cdbf, e = io.open(CHARDB_FILE, "wt")
-	if not cdbf then
-		minetest.log("warning", "[signs_lib] Could not save cached char DB: "..(e or ""))
-		return
-	end
-
-	cdbf:write(("0x00 %d\n"):format(LINE_HEIGHT))
-	for c = 32, 126 do
-		local w = charwidth[string.char(c)]
-		if w then
-			cdbf:write(("0x%02X %d\n"):format(c, w))
-		end
-	end
-	cdbf:close()
 
 end
 
@@ -347,6 +271,7 @@ end
 
 local function split_lines_and_words(text)
 	if not text then return end
+	text = string.gsub(text, "@KEYWORD", current_keyword)
 	local lines = { }
 	for _, line in ipairs(text:split("\n")) do
 		table.insert(lines, line:split(" "))
@@ -359,11 +284,8 @@ local math_max = math.max
 local function fill_line(x, y, w, c)
 	c = c or "0"
 	local tex = { }
-	for xx = 0, math.max(0, w-16), 16 do
+	for xx = 0, math.max(0, w), COLORBGW do
 		table.insert(tex, (":%d,%d=slc_%s.png"):format(x + xx, y, c))
-	end
-	if ((w % 16) > 0) and (w > 16) then
-		table.insert(tex, (":%d,%d=slc_%s.png"):format(x + w - 16, y, c))
 	end
 	return table.concat(tex)
 end
@@ -509,9 +431,34 @@ local function make_infotext(text)
 end
 
 signs_lib.update_sign = function(pos, fields, owner)
-    local meta = minetest.get_meta(pos)
 
-    local new
+	-- First, check if the interact keyword from CWz's mod is being set,
+	-- or has been changed since the last restart...
+
+	local meta = minetest.get_meta(pos)
+	local stored_text = meta:get_string("text") or ""
+	current_keyword = mki_interact_keyword or current_keyword
+
+	if fields then -- ...we're editing the sign.
+		if fields.text and string.find(dump(fields.text), "@KEYWORD") then
+			meta:set_string("keyword", current_keyword)
+		else
+			meta:set_string("keyword", nil)
+		end
+	elseif string.find(dump(stored_text), "@KEYWORD") then -- we need to check if the password is being set/changed
+
+		local stored_keyword = meta:get_string("keyword")
+		if stored_keyword and stored_keyword ~= "" and stored_keyword ~= current_keyword then
+			signs_lib.destruct_sign(pos)
+			meta:set_string("keyword", current_keyword)
+			local ownstr = ""
+			if owner then ownstr = "Locked sign, owned by "..owner.."\n" end
+			meta:set_string("infotext", ownstr..string.gsub(make_infotext(stored_text), "@KEYWORD", current_keyword).." ")
+		end
+	end
+
+	local new
+
 	if fields then
 
 		fields.text = trim_input(fields.text)
@@ -519,18 +466,19 @@ signs_lib.update_sign = function(pos, fields, owner)
 		local ownstr = ""
 		if owner then ownstr = "Locked sign, owned by "..owner.."\n" end
 
-		meta:set_string("infotext", ownstr..make_infotext(fields.text).." ")
+		meta:set_string("infotext", ownstr..string.gsub(make_infotext(fields.text), "@KEYWORD", current_keyword).." ")
 		meta:set_string("text", fields.text)
+		
 		meta:set_int("__signslib_new_format", 1)
 		new = true
 	else
 		new = (meta:get_int("__signslib_new_format") ~= 0)
 	end
-    local text = meta:get_string("text")
-    if text == nil then return end
-    local objects = minetest.get_objects_inside_radius(pos, 0.5)
-    local found
-    for _, v in ipairs(objects) do
+	local text = meta:get_string("text")
+	if text == nil then return end
+	local objects = minetest.get_objects_inside_radius(pos, 0.5)
+	local found
+	for _, v in ipairs(objects) do
 		local e = v:get_luaentity()
 		if e and e.name == "signs:text" then
 			if found then
@@ -539,11 +487,11 @@ signs_lib.update_sign = function(pos, fields, owner)
 				set_obj_text(v, text, new)
 				found = true
 			end
-        end
-    end
-    if found then
+		end
+	end
+	if found then
 		return
-    end
+	end
 
 	-- if there is no entity
 	local sign_info
@@ -553,7 +501,8 @@ signs_lib.update_sign = function(pos, fields, owner)
 	elseif signnode.name == "signs:sign_hanging" then
 		sign_info = signs_lib.hanging_sign_model.textpos[minetest.get_node(pos).param2 + 1]
 	elseif string.find(signnode.name, "sign_wall") then
-		if signnode.name == "default:sign_wall" then
+		if signnode.name == "default:sign_wall" 
+		  or signnode.name == "locked_sign:sign_wall_locked" then
 			sign_info = signs_lib.regular_wall_sign_model.textpos[minetest.get_node(pos).param2 + 1]
 		else
 			sign_info = signs_lib.metal_wall_sign_model.textpos[minetest.get_node(pos).param2 + 1]
@@ -628,11 +577,11 @@ function signs_lib.determine_sign_type(itemstack, placer, pointed_thing, locked)
 			minetest.add_node(above, {name = "signs:sign_hanging", param2 = fdir})
 		elseif wdir == 1 and signname == "default:sign_wall" then
 			minetest.add_node(above, {name = "signs:sign_yard", param2 = fdir})
-		elseif signname ~= "default:sign_wall" then -- it must be a metal wall sign.
+		elseif signname ~= "default:sign_wall"
+		  and signname ~= "locked_sign:sign_wall_locked" then -- it's a metal wall sign.
 			minetest.add_node(above, {name = signname, param2 = fdir})
 		else -- it must be a default or locked wooden wall sign
 			minetest.add_node(above, {name = signname, param2 = wdir }) -- note it's wallmounted here!
-			print(dump(wdir))
 			if locked then
 				local meta = minetest.get_meta(above)
 				local owner = placer:get_player_name()
@@ -696,6 +645,7 @@ minetest.register_node(":default:sign_wall", {
 	on_punch = function(pos, node, puncher)
 		signs_lib.update_sign(pos)
 	end,
+	on_rotate = signs_lib.wallmounted_rotate
 })
 
 minetest.register_node(":signs:sign_yard", {
@@ -830,11 +780,12 @@ minetest.register_node(":locked_sign:sign_wall_locked", {
 		return pname == owner or pname == minetest.setting_get("name")
 			or minetest.check_player_privs(pname, {sign_editor=true})
 	end,
+	on_rotate = signs_lib.wallmounted_rotate
 })
 
 -- metal, colored signs
 
-local sign_colors = { "green", "yellow", "red", "white_red", "white_black" }
+local sign_colors = { "green", "yellow", "red", "white_red", "white_black", "orange", "blue", "brown" }
 
 for _, color in ipairs(sign_colors) do
 	minetest.register_node(":signs:sign_wall_"..color, {
@@ -1084,6 +1035,54 @@ minetest.register_craft( {
         output = "signs:sign_wall_white_black 2",
         recipe = {
 			{ "dye:white", "dye:black", "dye:white" },
+			{ "steel:sheet_metal", "steel:sheet_metal", "steel:sheet_metal" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_orange 4",
+        recipe = {
+			{ "dye:orange", "dye:black", "dye:orange" },
+			{ "default:steel_ingot", "default:steel_ingot", "default:steel_ingot" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_orange 2",
+        recipe = {
+			{ "dye:orange", "dye:black", "dye:orange" },
+			{ "steel:sheet_metal", "steel:sheet_metal", "steel:sheet_metal" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_blue 4",
+        recipe = {
+			{ "dye:blue", "dye:white", "dye:blue" },
+			{ "default:steel_ingot", "default:steel_ingot", "default:steel_ingot" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_blue 2",
+        recipe = {
+			{ "dye:blue", "dye:white", "dye:blue" },
+			{ "steel:sheet_metal", "steel:sheet_metal", "steel:sheet_metal" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_brown 4",
+        recipe = {
+			{ "dye:brown", "dye:white", "dye:brown" },
+			{ "default:steel_ingot", "default:steel_ingot", "default:steel_ingot" }
+        },
+})
+
+minetest.register_craft( {
+        output = "signs:sign_wall_brown 2",
+        recipe = {
+			{ "dye:brown", "dye:white", "dye:brown" },
 			{ "steel:sheet_metal", "steel:sheet_metal", "steel:sheet_metal" }
         },
 })

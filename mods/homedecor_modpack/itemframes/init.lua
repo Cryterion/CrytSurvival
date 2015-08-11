@@ -1,4 +1,5 @@
 local tmp = {}
+screwdriver = screwdriver or {}
 
 minetest.register_entity("itemframes:item",{
 	hp_max = 1,
@@ -110,6 +111,7 @@ minetest.register_node("itemframes:frame",{
 	groups = { choppy=2,dig_immediate=2 },
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
+	on_rotate = screwdriver.disallow,
 	after_place_node = function(pos, placer, itemstack)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("owner",placer:get_player_name())
@@ -137,7 +139,13 @@ minetest.register_node("itemframes:frame",{
 		local meta = minetest.get_meta(pos)
 		return player:get_player_name() == meta:get_string("owner")
 	end,
-	after_destruct = remove_item,
+	on_destruct = function(pos)
+		local meta = minetest.get_meta(pos)
+		local node = minetest.get_node(pos)
+		if meta:get_string("item") ~= "" then
+			drop_item(pos, node)
+		end
+	end,
 })
 
 
@@ -155,6 +163,7 @@ minetest.register_node("itemframes:pedestal",{
 	paramtype = "light",
 	groups = { cracky=3 },
 	sounds = default.node_sound_defaults(),
+	on_rotate = screwdriver.disallow,
 	after_place_node = function(pos, placer, itemstack)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("owner",placer:get_player_name())
@@ -182,7 +191,13 @@ minetest.register_node("itemframes:pedestal",{
 		local meta = minetest.get_meta(pos)
 		return player:get_player_name() == meta:get_string("owner")
 	end,
-	after_destruct = remove_item,
+	on_destruct = function(pos)
+		local meta = minetest.get_meta(pos)
+		local node = minetest.get_node(pos)
+		if meta:get_string("item") ~= "" then
+			drop_item(pos, node)
+		end
+	end,
 })
 
 -- automatically restore entities lost from frames/pedestals
@@ -193,7 +208,17 @@ minetest.register_abm({
 	interval = 15,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		if #minetest.get_objects_inside_radius(pos, 0.5) > 0 then return end
+		local num
+
+		if node.name == "itemframes:frame" then
+			num = #minetest.get_objects_inside_radius(pos, 0.5)
+		elseif node.name == "itemframes:pedestal" then
+			pos.y = pos.y + 1
+			num = #minetest.get_objects_inside_radius(pos, 0.5)
+			pos.y = pos.y - 1
+		end
+
+		if num > 0 then return end
 		update_item(pos, node)
 	end
 })

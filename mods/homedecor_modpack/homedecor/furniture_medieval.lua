@@ -3,8 +3,7 @@ local S = homedecor.gettext
 
 homedecor.register("bars", {
 	description = S("Bars"),
-	tiles = { "forniture_black_metal.png" },
-	sunlight_propagates = true,
+	tiles = { "homedecor_generic_metal_black.png^[transformR270" },
 	node_box = {
 		type = "fixed",
 		fixed = {
@@ -19,14 +18,14 @@ homedecor.register("bars", {
 		type = "fixed",
 		fixed = { -0.5, -0.5, -0.1, 0.5, 0.5, 0.1 },
 	},
-	groups = {cracky=1},
+	groups = {cracky=3},
+	sounds = default.node_sound_stone_defaults(),
 })
 
 --L Binding Bars
 homedecor.register("L_binding_bars", {
 	description = S("Binding Bars"),
-	tiles = { "forniture_black_metal.png" },
-	sunlight_propagates = true,
+	tiles = { "homedecor_generic_metal_black.png^[transformR270" },
 	node_box = {
 		type = "fixed",
 		fixed = {
@@ -39,7 +38,8 @@ homedecor.register("L_binding_bars", {
 			{ -0.05,  0.45, -0.50,  0.05,  0.50,  0.00 },
 		},
 	},
-	groups = {cracky=1,}
+	groups = {cracky=3},
+	sounds = default.node_sound_stone_defaults(),
 })
 
 local chain_cbox = {
@@ -50,12 +50,12 @@ local chain_cbox = {
 homedecor.register("chains", {
 	description = S("Chains"),
 	mesh = "forniture_chains.obj",
-	tiles = { "forniture_black_metal.png" },
+	tiles = { "homedecor_generic_metal_black.png" },
 	inventory_image="forniture_chains_inv.png",
-	sunlight_propagates = true,
 	selection_box = chain_cbox,
-	collision_box = chain_cbox,
-	groups = {cracky=1},
+	walkable = false,
+	groups = {cracky=3},
+	sounds = default.node_sound_stone_defaults(),
 })
 
 homedecor.register("torch_wall", {
@@ -71,19 +71,18 @@ homedecor.register("torch_wall", {
 				length=1.0,
 			},
 		},
-		"forniture_black_metal.png",
-		"forniture_metal.png",
+		"homedecor_generic_metal_black.png",
+		"homedecor_generic_metal_black.png^[brighten",
 		"forniture_coal.png",
 	},
 	inventory_image="forniture_torch_inv.png",
-	sunlight_propagates = true,
 	walkable = false,
 	light_source = 14,
 	selection_box = {
 		type = "fixed",
 		fixed = { -0.15, -0.45, 0.15, 0.15,0.35, 0.5 },
 	},
-	groups = {cracky=2},
+	groups = {cracky=3},
 })
 
 local wl_cbox = {
@@ -94,12 +93,14 @@ local wl_cbox = {
 homedecor.register("wall_lamp", {
 	description = S("Wall Lamp"),
 	mesh = "homedecor_wall_lamp.obj",
-	tiles = {"homedecor_wall_lamp.png"},
+	tiles = {"homedecor_generic_metal_black.png^[brighten", "homedecor_generic_wood_luxury.png^[colorize:#000000:30", 
+			"homedecor_light.png", "homedecor_generic_metal_wrought_iron.png"},
+	use_texture_alpha = true,
 	inventory_image = "homedecor_wall_lamp_inv.png",
 	groups = {snappy=3},
 	light_source = 11,
 	selection_box = wl_cbox,
-	collision_box = wl_cbox
+	walkable = false
 })
 
 minetest.register_alias("3dforniture:bars", "homedecor:bars")

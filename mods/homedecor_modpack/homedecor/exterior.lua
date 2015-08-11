@@ -1,5 +1,4 @@
 local S = homedecor.gettext
-dofile(homedecor.modpath.."/furniture.lua")
 
 local bbq_cbox = {
 	type = "fixed",
@@ -10,7 +9,7 @@ homedecor.register("barbecue", {
 	description = "Barbecue",
 	mesh = "homedecor_barbecue.obj",
 	tiles = {
-		"forniture_black_metal.png",
+		"homedecor_generic_metal_black.png",
 		{	name="homedecor_embers.png",
 			animation={
 				type="vertical_frames",
@@ -25,214 +24,103 @@ homedecor.register("barbecue", {
 	light_source = 9,
 	selection_box = bbq_cbox,
 	collision_box = bbq_cbox,
+	sounds = default.node_sound_stone_defaults(),
 	expand = { top="air" },
 })
 
 minetest.register_alias("homedecor:barbecue_meat", "air")
 
-homedecor.register("bench_large_1_left", {
+local bl1_sbox = {
+	type = "fixed",
+	fixed = { -0.5, -0.5, -0.25, 1.5, 0.5, 0.5 }
+}
+
+local bl1_cbox = {
+	type = "fixed",
+	fixed = {
+		{-0.5, -0.5, -0.25, 1.5, 0, 0.5 },
+		{-0.5, -0.5, 0.45, 1.5, 0.5, 0.5 },
+	}
+}
+
+homedecor.register("bench_large_1", {
+	mesh = "homedecor_bench_large_1.obj",
+	tiles = {
+		"homedecor_generic_wood_old.png",
+		"homedecor_generic_metal_wrought_iron.png"
+	},
 	description = "Garden Bench (style 1)",
-	tiles = {
-		"homedecor_bench_large_1_left_top.png",
-		"homedecor_bench_large_1_left_bottom.png",
-		"homedecor_bench_large_1_ends.png^[transformFX",
-		"homedecor_bench_large_1_ends.png",
-		"homedecor_bench_large_1_left_back.png",
-		"homedecor_bench_large_1_left_front.png"
-	},
 	inventory_image = "homedecor_bench_large_1_inv.png",
-	groups = {snappy=3},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, 0.25, 0.375, 0.5, 0.4375, 0.4375}, -- NodeBox1
-			{-0.5, 0, 0.375, 0.5, 0.1875, 0.4375}, -- NodeBox2
-			{-0.5, -0.125, 0.115, 0.5, -0.0625, 0.35}, -- NodeBox3
-			{-0.5, -0.125, -0.0872, 0.5, -0.0625, 0.079}, -- NodeBox4
-			{-0.3125, -0.5, 0.4375, -0.25, 0.375, 0.5}, -- NodeBox5
-			{-0.3125, -0.25, -0.0625, -0.25, -0.125, 0.4375}, -- NodeBox6
-			{-0.3125, -0.5, -0.0625, -0.25, -0.25, 0}, -- NodeBox7
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.5, -0.5, -0.09375, 1.5, 0.5, 0.5 }
-	},
-	expand = { right="homedecor:bench_large_1_right" },
-	--[[
-	on_rightclick = function(pos, node, clicker)
-		pos.y = pos.y-0 -- player's sit position.
-		homedecor.sit_exec(pos, node, clicker)
-	end,
-	--]]
+	groups = { snappy = 3 },
+	expand = { right="air" },
+	sounds = default.node_sound_wood_defaults(),
+	selection_box = bl1_sbox,
+	node_box = bl1_cbox,
+	on_rotate = screwdriver.disallow
 })
 
-homedecor.register("bench_large_1_right", {
-	tiles = {
-		"homedecor_bench_large_1_left_top.png^[transformFX",
-		"homedecor_bench_large_1_left_bottom.png^[transformFX",
-		"homedecor_bench_large_1_ends.png^[transformFX",
-		"homedecor_bench_large_1_ends.png",
-		"homedecor_bench_large_1_left_back.png^[transformFX",
-		"homedecor_bench_large_1_left_front.png^[transformFX"
-	},
-	groups = {snappy=3},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, 0.25, 0.375, 0.5, 0.4375, 0.4375}, -- NodeBox1
-			{-0.5, 0, 0.375, 0.5, 0.1875, 0.4375}, -- NodeBox2
-			{-0.5, -0.125, 0.115, 0.5, -0.0625, 0.35}, -- NodeBox3
-			{-0.5, -0.125, -0.0872, 0.5, -0.0625, 0.079}, -- NodeBox4
-			{0.25, -0.5, 0.4375, 0.3125, 0.375, 0.5}, -- NodeBox5
-			{0.25, -0.25, -0.0625, 0.3125, -0.125, 0.5}, -- NodeBox6
-			{0.25, -0.5, -0.0625, 0.3125, -0.25, 0}, -- NodeBox7
-		}
-	},
-	selection_box = homedecor.nodebox.null,
-})
+minetest.register_alias("homedecor:bench_large_1_left", "homedecor:bench_large_1")
+minetest.register_alias("homedecor:bench_large_1_right", "air")
 
+local bl2_sbox = {
+	type = "fixed",
+	fixed = { -0.5, -0.5, -0.25, 1.5, 0.5, 0.5 }
+}
 
-homedecor.register("bench_large_2_left", {
+local bl2_cbox = {
+	type = "fixed",
+	fixed = {
+		{-0.5, -0.5, -0.25, 1.5, 0, 0.5 },
+		{-0.5, -0.5, 0.45, 1.5, 0.5, 0.5 },
+	}
+}
+
+homedecor.register("bench_large_2", {
 	description = "Garden Bench (style 2)",
-	tiles = {
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_bench_large_2_left_back.png",
-		"homedecor_bench_large_2_left_back.png^[transformFX"
-	},
+	mesh = "homedecor_bench_large_2.obj",
+	tiles = { "homedecor_generic_wood_old.png" },
 	inventory_image = "homedecor_bench_large_2_inv.png",
 	groups = {snappy=3},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, -0.5, 0.375, -0.375, 0.5, 0.5}, -- NodeBox1
-			{-0.375, 0.3125, 0.4375, 0.5, 0.4375, 0.5}, -- NodeBox2
-			{-0.375, -0.0625, 0.4375, 0.5, 0.0625, 0.5}, -- NodeBox3
-			{-0.3125, 0.0625, 0.45, -0.25, 0.3125, 0.48}, -- NodeBox4
-			{-0.1875, 0.0625, 0.45, -0.125, 0.3125, 0.48}, -- NodeBox5
-			{-0.0625, 0.0625, 0.45, 0, 0.3125, 0.48}, -- NodeBox6
-			{0.0625, 0.0625, 0.45, 0.125, 0.3125, 0.48}, -- NodeBox7
-			{0.1875, 0.0625, 0.45, 0.25, 0.3125, 0.48}, -- NodeBox8
-			{0.3125, 0.0625, 0.45, 0.375, 0.3125, 0.48}, -- NodeBox9
-			{0.4375, 0.0625, 0.45, 0.5, 0.3125, 0.48}, -- NodeBox10
-			{-0.5, 0.0625, -0.145362, -0.375, 0.125, 0.375}, -- NodeBox11
-			{-0.5, -0.5, -0.0625, -0.375, 0.0625, 0.0625}, -- NodeBox12
-			{-0.4375, -0.125, -0.0625, 0.5, -0.0911603, 0.4375}, -- NodeBox13
-			{-0.4375, -0.4375, 0.0625, -0.375, -0.3125, 0.375}, -- NodeBox14
-			{-0.375, -0.342324, 0.25, 0.5, -0.4375, 0.1875}, -- NodeBox15
-			{-0.5, -0.25, -0.0290173, 0.5, -0.125, 0.0125346}, -- NodeBox16
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.5, -0.5, -0.15625, 1.5, 0.5, 0.5 }
-	},
-	expand = { right="homedecor:bench_large_2_right" },
-	--[[
-	on_rightclick = function(pos, node, clicker)
-		pos.y = pos.y-0 -- player's sit position.
-		homedecor.sit_exec(pos, node, clicker)
-	end,
-	--]]
+	selection_box = bl2_sbox,
+	node_box = bl2_cbox,
+	expand = { right="air" },
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.disallow
 })
 
-homedecor.register("bench_large_2_right", {
-	tiles = {
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_bench_large_2_right_back.png",
-		"homedecor_bench_large_2_right_back.png^[transformFX"
-	},
-	groups = {snappy=3},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{0.375, -0.5, 0.375, 0.5, 0.5, 0.5}, -- NodeBox1
-			{-0.5, 0.3125, 0.4375, 0.375, 0.4375, 0.5}, -- NodeBox2
-			{-0.5, -0.0625, 0.4375, 0.375, 0.0625, 0.5}, -- NodeBox3
-			{-0.5, 0.0625, 0.45, -0.4375, 0.3125, 0.48}, -- NodeBox4
-			{-0.375, 0.0625, 0.45, -0.3125, 0.3125, 0.48}, -- NodeBox5
-			{-0.25, 0.0625, 0.45, -0.1875, 0.3125, 0.48}, -- NodeBox6
-			{-0.125, 0.0625, 0.45, -0.0625, 0.3125, 0.48}, -- NodeBox7
-			{0, 0.0625, 0.45, 0.0625, 0.3125, 0.48}, -- NodeBox8
-			{0.125, 0.0625, 0.45, 0.1875, 0.3125, 0.48}, -- NodeBox9
-			{0.25, 0.0625, 0.45, 0.3125, 0.3125, 0.48}, -- NodeBox10
-			{0.375, 0.0625, -0.145362, 0.5, 0.125, 0.375}, -- NodeBox11
-			{0.375, -0.5, -0.0625, 0.5, 0.125, 0.0625}, -- NodeBox12
-			{0.375, -0.4375, 0.0625, 0.4375, -0.3125, 0.375}, -- NodeBox13
-			{-0.5, -0.4375, 0.1875, 0.375, -0.342324, 0.25}, -- NodeBox14
-			{-0.5, -0.125, -0.0625, 0.4375, -0.0911603, 0.4375}, -- NodeBox15
-			{-0.5, -0.25, -0.0290173, 0.5, -0.125, 0.0125346}, -- NodeBox16
-		}
-	},
-	selection_box = homedecor.nodebox.null,
-})
+minetest.register_alias("homedecor:bench_large_2_left", "homedecor:bench_large_2")
+minetest.register_alias("homedecor:bench_large_2_right", "air")
 
-homedecor.register("deckchair_head", {
-	tiles = {
-		"homedecor_deckchair_top_c1.png",
-		"homedecor_deckchair_sides.png",
-		"homedecor_deckchair_sides.png",
-		"homedecor_deckchair_sides.png^[transformFX",
-		"homedecor_deckchair_sides.png",
-		"homedecor_deckchair_front.png"
-	},
-	groups = { snappy = 3, not_in_creative_inventory = 1 },
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.375, -0.3125, -0.0625, 0.375, -0.25, 0}, -- NodeBox1
-			{-0.375, -0.25, 0, 0.375, -0.1875, 0.0625}, -- NodeBox2
-			{-0.375, -0.1875, 0.0625, 0.375, -0.125, 0.125}, -- NodeBox3
-			{-0.375, -0.125, 0.125, 0.375, -0.0625, 0.1875}, -- NodeBox4
-			{-0.375, -0.0625, 0.1875, 0.375, 0, 0.25}, -- NodeBox5
-			{-0.375, 0, 0.25, 0.375, 0.0625, 0.3125}, -- NodeBox6
-			{-0.375, 0.0625, 0.3125, 0.375, 0.125, 0.375}, -- NodeBox7
-			{-0.375, 0.125, 0.375, 0.375, 0.1875, 0.4375}, -- NodeBox8
-			{-0.375, 0.1875, 0.4375, 0.375, 0.25, 0.5}, -- NodeBox9
-			{-0.375, -0.375, -0.5, 0.375, -0.3125, 0.0625}, -- NodeBox10
-			{0.3125, -0.1875, -0.5, 0.4375, -0.1575, 0.0625}, -- NodeBox11
-			{-0.4375, -0.1875, -0.5, -0.3125, -0.1575, 0.0625}, -- NodeBox12
-			{0.3125, -0.5, 0, 0.375, -0.25, 0.0625}, -- NodeBox13
-			{-0.375, -0.5, 0, -0.3125, -0.25, 0.0625}, -- NodeBox14
-		}
-	},
-	selection_box = homedecor.nodebox.null
-})
+local dc_cbox = {
+	type = "fixed",
+	fixed = { -0.5, -0.5, -0.5, 0.5, 0, 1 }
+}
 
-homedecor.register("deckchair_foot", {
-	tiles = {
-		"homedecor_deckchair_top_c2.png",
-		"homedecor_deckchair_sides.png",
-		"homedecor_deckchair_sides.png",
-		"homedecor_deckchair_sides.png^[transformFX",
-		"homedecor_deckchair_front.png"
-	},
-	description = "Deck chair",
-	inventory_image = "homedecor_deckchair_inv.png",
+homedecor.register("deckchair", {
+	mesh = "homedecor_deckchair.obj",
+	tiles = {"homedecor_deckchair.png"},
+	description = "Deck Chair",
 	groups = { snappy = 3 },
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.375, -0.375, -0.5, 0.375, -0.3125, 0.5}, -- NodeBox1
-			{0.3125, -0.5, -0.5, 0.375, -0.375, -0.4375}, -- NodeBox2
-			{-0.375, -0.5, -0.5, -0.3125, -0.375, -0.4375}, -- NodeBox3
-			{0.3125, -0.1875, 0.3, 0.4375, -0.1575, 0.5}, -- NodeBox4
-			{-0.4375, -0.1875, 0.3, -0.3125, -0.1575, 0.5}, -- NodeBox5
-			{-0.365, -0.3125, 0.32, -0.3225, -0.1875, 0.4375}, -- NodeBox6
-			{0.3225, -0.3125, 0.32, 0.365, -0.1875, 0.4375}, -- NodeBox7
-		}
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = { -0.45, -0.5, -0.5, 0.45, 0.35, 1.5 }
-	},
-	expand = { forward="homedecor:deckchair_head" },
+	expand = { forward="air" },
+	sounds = default.node_sound_wood_defaults(),
+	selection_box = dc_cbox,
+	collision_box = dc_cbox,
+	on_rotate = screwdriver.disallow
+})
+
+minetest.register_alias("homedecor:deckchair_foot", "homedecor:deckchair")
+minetest.register_alias("homedecor:deckchair_head", "air")
+
+homedecor.register("deckchair_striped_blue", {
+	mesh = "homedecor_deckchair.obj",
+	tiles = {"homedecor_deckchair_striped_blue.png"},
+	description = "Deck Chair",
+	groups = { snappy = 3 },
+	expand = { forward="air" },
+	sounds = default.node_sound_wood_defaults(),
+	selection_box = dc_cbox,
+	collision_box = dc_cbox,
+	on_rotate = screwdriver.disallow
 })
 
 homedecor.register("doghouse", {
@@ -248,20 +136,15 @@ homedecor.register("doghouse", {
 	collision_box = homedecor.nodebox.slab_y(1.5),
 	groups = {snappy=3},
 	expand = { top="air" },
+	sounds = default.node_sound_wood_defaults(),
+	on_rotate = screwdriver.rotate_simple
 })
 
 minetest.register_alias("homedecor:doghouse_roof", "air")
 minetest.register_alias("homedecor:doghouse_base", "homedecor:doghouse")
 
 homedecor.register("simple_bench", {
-	tiles = {
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_generic_wood.png",
-		"homedecor_bench_large_2_left_back.png",
-		"homedecor_bench_large_2_left_back.png^[transformFX"
-	},
+	tiles = { "homedecor_generic_wood_old.png" },
 	description = "Simple Bench",
 	groups = {snappy=3},
 	node_box = {
@@ -272,12 +155,7 @@ homedecor.register("simple_bench", {
 			{ 0.3, -0.5,  0.1,  0.4, -0.15, 0.3},
 			}
 	},
-	--[[
-	on_rightclick = function(pos, node, clicker)
-		pos.y = pos.y-0 -- player's sit position.
-		homedecor.sit_exec(pos, node, clicker)
-	end,
-	--]]
+	sounds = default.node_sound_wood_defaults(),
 })
 
 homedecor.register("stonepath", {
@@ -303,8 +181,40 @@ homedecor.register("stonepath", {
 	selection_box = {
 		type = "fixed",
 		fixed = { -0.4375, -0.5, -0.4375, 0.4375, -0.4, 0.4375 }
-	}
+	},
+	sounds = default.node_sound_stone_defaults(),
 })
+
+local lattice_colors = {
+	{"wood", ".png^[colorize:#704214:180"},
+	{"white_wood", ".png"},
+	{"wood_vegetal", ".png^[colorize:#704214:180^homedecor_lattice_vegetal.png"},
+	{"white_wood_vegetal", ".png^homedecor_lattice_vegetal.png"},
+}
+
+for _, m in ipairs(lattice_colors) do
+homedecor.register("lattice_"..m[1], {
+	description = "Garden Lattice ("..m[1]..")",
+	tiles = {"homedecor_lattice"..m[2]},
+	inventory_image = "homedecor_lattice"..m[2],
+	groups = { snappy=3 },
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, 0.47, 0.5, 0.5, 0.47}, -- NodeBox1
+			{-0.5, 0.421875, 0.44, 0.5, 0.5, 0.5}, -- NodeBox2
+			{-0.5, -0.5, 0.44, 0.5, -0.421875, 0.5}, -- NodeBox3
+			{0.421875, -0.5, 0.44, 0.5, 0.5, 0.5}, -- NodeBox4
+			{-0.5, -0.5, 0.44, -0.421875, 0.5, 0.5} -- NodeBox5
+		}
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, 0.44, 0.5, 0.5, 0.5}
+	},
+	sounds = default.node_sound_wood_defaults(),
+})
+end
 
 homedecor.register("swing", {
 	description = "Tree's swing",
@@ -315,6 +225,9 @@ homedecor.register("swing", {
 	},
 	inventory_image = "homedecor_swing_inv.png",
 	groups = { snappy=3, oddly_breakable_by_hand=3 },
+	sounds = default.node_sound_wood_defaults(),
+	walkable = false,
+	on_rotate = screwdriver.disallow,
 	node_box = {
 		type = "fixed",
 		fixed = {
@@ -383,6 +296,7 @@ homedecor.register("swing_rope", {
 		"homedecor_swingrope_sides.png"
 	},
 	groups = { not_in_creative_inventory=1 },
+	walkable = false,
 	node_box = {
 		type = "fixed",
 		fixed = {
@@ -397,7 +311,7 @@ homedecor.register("well", {
 	mesh = "homedecor_well.obj",
 	tiles = {
 		"homedecor_rope_texture.png",
-		"forniture_metal.png",
+		"homedecor_generic_metal_black.png^[brighten",
 		"default_water.png",
 		"default_cobble.png",
 		"default_wood.png",
@@ -409,8 +323,86 @@ homedecor.register("well", {
 	selection_box = homedecor.nodebox.slab_y(2),
 	collision_box = homedecor.nodebox.slab_y(2),
 	expand = { top="air" },
+	sounds = default.node_sound_stone_defaults(),
+	on_rotate = screwdriver.rotate_simple
 })
+
+if minetest.get_modpath("bucket") then
+	local original_bucket_on_use = minetest.registered_items["bucket:bucket_empty"].on_use
+	minetest.override_item("bucket:bucket_empty", {
+		on_use = function(itemstack, user, pointed_thing)
+			local inv = user:get_inventory()
+
+			if pointed_thing.type == "node" and minetest.get_node(pointed_thing.under).name == "homedecor:well" then
+				if inv:room_for_item("main", "bucket:bucket_water 1") then
+					itemstack:take_item()
+					inv:add_item("main", "bucket:bucket_water 1")
+				else
+					minetest.chat_send_player(user:get_player_name(), "No room in your inventory to add a filled bucket!")
+				end
+				return itemstack
+			else if original_bucket_on_use then
+				return original_bucket_on_use(itemstack, user, pointed_thing)
+			else return end
+		end
+	end
+	})
+end
+
+local shrub_model = {
+	type = "fixed",
+	fixed = {
+		{-0.312500,-0.500000,0.250000,-0.187500,-0.437500,0.375000}, --NodeBox 1
+		{0.187500,-0.500000,-0.125000,0.312500,-0.437500,0.000000}, --NodeBox 2
+		{0.000000,-0.500000,-0.312500,0.125000,-0.437500,-0.187500}, --NodeBox 3
+		{-0.375000,-0.500000,-0.062500,-0.250000,-0.437500,0.062500}, --NodeBox 4
+		{0.000000,-0.500000,-0.250000,0.125000,-0.437500,-0.125000}, --NodeBox 5
+		{0.187500,-0.437500,-0.187500,0.375000,-0.375000,0.062500}, --NodeBox 6
+		{-0.062500,-0.437500,0.125000,0.187500,-0.375000,0.375000}, --NodeBox 7
+		{-0.062500,-0.437500,-0.375000,0.187500,-0.375000,-0.062500}, --NodeBox 8
+		{-0.375000,-0.437500,0.187500,-0.125000,-0.375000,0.431179}, --NodeBox 9
+		{-0.437500,-0.437500,-0.125000,-0.187500,-0.375000,0.125000}, --NodeBox 10
+		{-0.437500,-0.375000,-0.437500,0.439966,-0.312500,0.420887}, --NodeBox 11
+		{-0.500000,-0.312500,-0.500000,0.500000,0.500000,0.500000}, --NodeBox 12
+		{0.000000,-0.500000,0.187500,0.125000,-0.437500,0.312500}, --NodeBox 13
+	}
+}
+
+homedecor.shrub_colors = {
+	"green",
+	"red",
+	"yellow"
+}
+
+for _, color in ipairs(homedecor.shrub_colors) do
+	minetest.register_node("homedecor:shrubbery_large_"..color, {
+		description = S("Shrubbery ("..color..")"),
+		drawtype = "allfaces_optional",
+		tiles = {"homedecor_shrubbery_"..color.."_top.png"},
+		paramtype = "light",
+		is_ground_content = false,
+		groups = {snappy=3, flammable=2},
+		sounds = default.node_sound_leaves_defaults(),
+	})
+
+	minetest.register_node("homedecor:shrubbery_"..color, {
+		description = S("Shrubbery ("..color..")"),
+		drawtype = "nodebox",
+		tiles = {
+			"homedecor_shrubbery_"..color.."_top.png",
+			"homedecor_shrubbery_bottom.png",
+			"homedecor_shrubbery_"..color.."_sides.png"
+		},
+		paramtype = "light",
+		is_ground_content = false,
+		groups = {snappy=3, flammable=2},
+		sounds = default.node_sound_leaves_defaults(),
+		node_box = shrub_model
+	})
+end
 
 minetest.register_alias("homedecor:well_top", "air")
 minetest.register_alias("homedecor:well_base", "homedecor:well")
 
+minetest.register_alias("gloopblocks:shrubbery", "homedecor:shrubbery_green")
+minetest.register_alias("gloopblocks:shrubbery_large", "homedecor:shrubbery_large_green")

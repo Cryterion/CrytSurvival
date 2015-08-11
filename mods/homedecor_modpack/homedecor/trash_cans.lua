@@ -17,7 +17,6 @@ homedecor.register("trash_can_green", {
 	on_punch = function(pos, node, puncher, pointed_thing)
 		minetest.set_node(pos, {name = "homedecor:trash_can_green_open", param2 = node.param2})
 	end
-	
 })
 
 homedecor.register("trash_can_green_open", {
@@ -27,6 +26,7 @@ homedecor.register("trash_can_green_open", {
    	groups = {snappy=3, not_in_creative_inventory=1},
 	selection_box = tg_cbox,
 	collision_box = tg_cbox,
+	drop = "homedecor:trash_can_green",
 	on_punch = function(pos, node, puncher, pointed_thing)
 		minetest.set_node(pos, {name = "homedecor:trash_can_green", param2 = node.param2})
 	end,
@@ -47,19 +47,16 @@ homedecor.register("trash_can_green_open", {
 		return inv:is_empty("main")
 	end,
 	on_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-		minetest.log("action", S("%s moves stuff in %s at %s"):format(
-			player:get_player_name(), name, minetest.pos_to_string(pos)
-		))
+		minetest.log("action", player:get_player_name()..
+				" moves stuff in trash can at "..minetest.pos_to_string(pos))
 	end,
 	on_metadata_inventory_put = function(pos, listname, index, stack, player)
-		minetest.log("action", S("%s moves stuff in %s at %s"):format(
-			player:get_player_name(), name, minetest.pos_to_string(pos)
-		))
+		minetest.log("action", player:get_player_name()..
+				" moves stuff in trash can at "..minetest.pos_to_string(pos))
 	end,
 	on_metadata_inventory_take = function(pos, listname, index, stack, player)
-		minetest.log("action", S("%s takes stuff in %s at %s"):format(
-			player:get_player_name(), name, minetest.pos_to_string(pos)
-		))
+		minetest.log("action", player:get_player_name()..
+				" takes stuff from trash can at "..minetest.pos_to_string(pos))
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		if fields.empty then
@@ -68,7 +65,7 @@ homedecor.register("trash_can_green_open", {
 			inv:set_list("main", {})
 			minetest.sound_play("homedecor_trash_all", {to_player=sender:get_player_name(), gain = 1.0})
 		end
-	end,
+	end
 })
 
 local trash_cbox = {
