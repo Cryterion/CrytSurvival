@@ -1,3 +1,5 @@
+#this mod has arbitary recipes etc specifically for the game
+
 local arbmods = {}
 
 local modpath = minetest.get_modpath("arbmods")
