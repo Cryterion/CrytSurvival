@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------------
 -- by Mossmanikin
 -- License (everything): 	WTFPL
--- Contains code from: 		plants_lib
+-- Contains code from: 		biome_lib
 -- Looked at code from:		4seasons, default
 -- Supports:				vines			
 -----------------------------------------------------------------------------------------------
@@ -110,11 +110,17 @@ minetest.register_node("ferns:tree_fern_leaves_giant", {
 		not_in_creative_inventory=1
 	},
 	drop = {
-		max_items = 1,
+		max_items = 2,
 		items = {
 			{
+				-- occasionally, drop a second sapling instead of leaves
+				-- (extra saplings can also be obtained by replanting and
+				--  reharvesting leaves)
 				items = {"ferns:sapling_giant_tree_fern"},
-				rarity = 40,
+				rarity = 10,
+			},
+			{
+				items = {"ferns:sapling_giant_tree_fern"},
 			},
 			{
 				items = {"ferns:tree_fern_leaves_giant"},
@@ -279,7 +285,7 @@ minetest.register_abm({
 
 -- in jungles
 if abstract_ferns.config.enable_giant_treeferns_in_jungle == true then
-	plantslib:register_generate_plant({
+	biome_lib:register_generate_plant({
 		surface = {
 			"default:dirt_with_grass",
 			"default:sand",
@@ -304,7 +310,7 @@ end
 
 -- for oases & tropical beaches
 if abstract_ferns.config.enable_giant_treeferns_in_oases == true then
-	plantslib:register_generate_plant({
+	biome_lib:register_generate_plant({
 		surface = {
 			"default:sand"--,
 			--"default:desert_sand"
